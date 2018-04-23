@@ -1,0 +1,23 @@
+{
+  "name": "dashboard",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Pedro Ivo",
+  "license": "ISC",
+  "dependencies": {
+    "body-parser": "^1.18.2",
+    "express": "^4.16.3",
+    "express-query-int": "^3.0.0",
+    "lodash": "^4.17.5",
+    "mongoose": "^5.0.15",
+    "node-restful": "^0.2.6",
+    "pm2": "^2.10.2"
+  },
+  "devDependencies": {
+    "nodemon": "^1.17.3"
+  }
+}
