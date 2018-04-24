@@ -65,6 +65,8 @@ import MainPage from './telas/MainPage'
 import Home from './telas/Home'
 import Tela1 from './telas/Tela1'
 import Tela2 from './telas/Tela2'
+
+import Telas from './telas/Telas'
 import ControleAcessos from './telas/ControleAcessos'
 import ControleUsuarios from './telas/ControleUsuarios'
 
@@ -78,6 +80,7 @@ const Main = () => (
             <Route path='/main/tela2' component={Tela2} />
             <Route path='/main/controle_acessos' component={ControleAcessos} />
             <Route path='/main/controle_usuarios' component={ControleUsuarios} />
+            <Route path='/main/telas' component={Telas} />
         </Switch>
     </MainPage>
 )

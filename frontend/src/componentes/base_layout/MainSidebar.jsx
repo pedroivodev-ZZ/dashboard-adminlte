@@ -28,7 +28,7 @@ class MainSidebar extends Component {
             )
         } else if (acesso.tela.telas && !acesso.tela.path) {
             return (
-                <li  className="treeview" key={indice}>
+                <li className="treeview" key={indice}>
                     <a>
                         <i className="fa fa-share"></i> <span>{acesso.tela.nome}</span>
                         <span className="pull-right-container">
@@ -39,7 +39,7 @@ class MainSidebar extends Component {
                         {
                             acesso.tela.telas.map((tela, indice2) => {
                                 return (
-                                    <li>
+                                    <li key={indice+'-'+indice2}>
                                         <Link to={tela.path}><i className="fa fa-circle-o"></i> {tela.nome}</Link>
                                     </li>
                                 )
