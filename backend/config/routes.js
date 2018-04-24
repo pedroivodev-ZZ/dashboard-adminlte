@@ -1,15 +1,16 @@
 const express = require('express')
 const acessosService = require('../api/seguranca/servicos/AcessosService')
-const usuarioService = require('../api/seguranca/servicos/UsuarioService')
+const telasService = require('../api/seguranca/servicos/TelasService')
+const gruposService = require('../api/seguranca/servicos/GruposService')
+const usuariosService = require('../api/seguranca/servicos/UsuariosService')
 
 module.exports = function (server) {
-    //API routes
     const router = express.Router()
     server.use('/api', router)
 
-    //const billingCycleService = require('../api/billingCycle/billingCycleService')
-    //billingCycleService.register(router, '/billingCycles')
+    telasService.register(router, '/telas')
+    gruposService.register(router, '/grupos')
+    usuariosService.register(router, '/usuarios')
 
     router.route('/obter_acessos').get(acessosService.obterAcessos)
-    router.route('/login').get(usuarioService.login)
 }

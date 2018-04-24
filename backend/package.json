@@ -4,7 +4,7 @@
   "description": "",
   "main": "loader.js",
   "scripts": {
-    "start": "node loader.js",
+    "start": "nodemon loader.js",
     "production": "pm2 loader.js "
   },
   "author": "Pedro Ivo",
