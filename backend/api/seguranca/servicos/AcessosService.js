@@ -1,5 +1,5 @@
 const _ = require('lodash')
-const Acessos = require('../base/Acessos')
+/*const Acessos = require('../base/Acessos')
 
 function obterAcessos(req, res) {
     Acessos.find({
@@ -13,4 +13,4 @@ function obterAcessos(req, res) {
     })
 }
 
-module.exports = { obterAcessos }
+module.exports = { obterAcessos }*/

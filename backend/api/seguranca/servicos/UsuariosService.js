@@ -1,5 +1,5 @@
 const _ = require('lodash')
-const Usuarios = require('../base/Usuarios')
+/*const Usuarios = require('../base/Usuarios')
 const Acessos = require('../base/Acessos')
 
 Usuarios.methods(['get', 'post', 'put', 'delete'])
@@ -68,4 +68,4 @@ Usuarios.route('login', (req, res, next) => {
     })
 })
 
-module.exports = Usuarios
+module.exports = Usuarios*/

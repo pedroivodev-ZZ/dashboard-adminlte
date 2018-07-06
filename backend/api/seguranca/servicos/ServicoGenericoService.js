@@ -1,5 +1,5 @@
 const _ = require('lodash')
-const Acessos = require('../base/Acessos')
+/*const Acessos = require('../base/Acessos')
 
 Acessos.methods(['get', 'post', 'put', 'delete'])
 Acessos.updateOptions({ new: true, runValidators: true })
@@ -40,4 +40,4 @@ Acessos.route('count', (req, res, next) => {
     })
 })
 
-module.exports = Acessos
+module.exports = Acessos*/

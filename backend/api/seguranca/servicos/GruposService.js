@@ -1,5 +1,5 @@
 const _ = require('lodash')
-const Grupos = require('../base/Grupos')
+/*const Grupos = require('../base/Grupos')
 
 Grupos.methods(['get', 'post', 'put', 'delete'])
 Grupos.updateOptions({ new: true, runValidators: true })
@@ -38,4 +38,4 @@ Grupos.route('count', (req, res, next) => {
     })
 })
 
-module.exports = Grupos
+module.exports = Grupos*/
