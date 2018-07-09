@@ -57,10 +57,11 @@ import './fixes/adminlte-fix'
 
 import React from 'react'
 import ReactDOM from 'react-dom'
-import { Switch, Route, BrowserRouter } from 'react-router-dom'
+import { Switch, Route, BrowserRouter, Link } from 'react-router-dom'
 
 import Login from './telas/Login'
 import MainPage from './telas/MainPage'
+import MainSidebar from './componentes/base_layout/MainSidebar'
 
 import Home from './telas/Home'
 import Tela1 from './telas/Tela1'
@@ -72,19 +73,116 @@ import ControleUsuarios from './telas/ControleUsuarios'
 
 import registerServiceWorker from './registerServiceWorker'
 
+function buildMenuItem(telas, subItem) {
+    telas = !telas ? [] : telas
+    if (telas.length > 0) {
+        return (
+            <ul className={!subItem ? "sidebar-menu" : "treeview-menu"} data-widget={!subItem ? "tree" : ""}>
+            {
+                telas.map((tela, index) => {
+                    let subTelas = !tela.telas ? [] : tela.telas
+
+                    return (
+                        tela.path ? 
+                        <li key={tela.id} className="treeview">
+                            
+                            <Link to={tela.path}>
+                            <i className="fa fa-circle-o"></i>
+                            <span>{tela.nome}</span>
+                            {
+                                (subTelas.length > 0)
+                                ? <span className="pull-right-container"><i className="fa fa-angle-left pull-right"></i></span>
+                                : null
+                            }
+                            </Link>
+                            { buildMenuItem(subTelas, true) }
+                        </li>
+                        : 
+                        <li key={tela.id} className="treeview">
+                            <a>
+                            <i className="fa fa-circle-o"></i>
+                            <span>{tela.nome}</span>
+                            {
+                                (subTelas.length > 0)
+                                ? <span className="pull-right-container"><i className="fa fa-angle-left pull-right"></i></span>
+                                : null
+                            }
+                            </a>
+                            { buildMenuItem(subTelas, true) }
+                        </li>
+                    )
+                })
+            }
+            </ul>
+        )
+    } else {
+        return null
+    }
+}
+
+const Teste = () => (
+    <ul class="sidebar-menu tree">
+        <li class="treeview menu-open">
+        <Link to="/main/home"><i class="fa fa-circle-o"></i><span>Home</span></Link>
+        </li>
+        <li class="treeview">
+            <a><i class="fa fa-circle-o"></i><span>Segurança</span>
+            <span class="pull-right-container"><i class="fa fa-angle-left pull-right"></i></span>
+            </a>
+            <ul class="treeview-menu">
+                <li class="treeview">
+                    <Link to="/main/telas"><i class="fa fa-circle-o"></i>
+                        <span>Telas</span>
+                    </Link>
+                </li>
+            </ul>
+        </li>
+    </ul>
+    
+)
+
+const Teste2 = () => (<div>
+    <ul>
+        <li>
+        <Link to="/main/home">Home</Link>
+        </li>
+        <li>
+        <Link to="/main/tela1">About</Link>
+        </li>
+        <li>
+        <Link to="/main/telas">Topics</Link>
+        </li>
+    </ul>
+</div>)
+{/*<div>
+        <ul>
+            <li>
+            <Link to="/main/home">Home</Link>
+            </li>
+            <li>
+            <Link to="/main/tela1">About</Link>
+            </li>
+            <li>
+            <Link to="/main/telas">Topics</Link>
+            </li>
+        </ul>
+    </div>*/}
 const Main = () => (
-    <MainPage>
-        <Route>
-            <Switch>
-                <Route path='/main/home' component={Home} />
+    <BrowserRouter>
+        <MainPage>
+            {/*<div>
+                <MainSidebar />*/}
+
+                <Route exact path='/main/home' component={Home} />
                 <Route path='/main/tela1' component={Tela1} />
                 <Route path='/main/tela2' component={Tela2} />
                 <Route path='/main/controle_acessos' component={ControleAcessos} />
                 <Route path='/main/controle_usuarios' component={ControleUsuarios} />
                 <Route path='/main/telas' component={Telas} />
-            </Switch>
-        </Route>
-    </MainPage>
+            {/*</div>*/}
+        </MainPage>
+    </BrowserRouter>
+    
 )
 
 const Inicial = () => (

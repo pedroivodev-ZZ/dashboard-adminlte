@@ -2,6 +2,7 @@ import React, { Component } from 'react'
 
 import Header from '../componentes/base_layout/Header'
 import MainSidebar from '../componentes/base_layout/MainSidebar'
+import { Switch, Route, BrowserRouter, Link } from 'react-router-dom'
 //import ControlSidebar from '../componentes/base_layout/ControlSidebar'
 import Footer from '../componentes/base_layout/Footer'
 
@@ -16,12 +17,9 @@ class MainPage extends Component {
     render() {
         return (
             <div className="wrapper">
-                <Header />
                 <MainSidebar />
-
-                <div>
-                    {this.props.children}
-                </div>
+                <Header />
+                {this.props.children}
                 <Footer />
                 {/* <ControlSidebar /> */}
 
