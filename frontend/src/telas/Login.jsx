@@ -1,4 +1,5 @@
 import React, { Component } from 'react'
+import { Link } from 'react-router-dom'
 
 import 'admin-lte/plugins/iCheck/square/blue.css'
 
@@ -19,6 +20,7 @@ class Login extends Component {
     }
 
     componentDidMount() {
+        //this.props.history.push("/main/telas");
         $('body').prop('class', 'hold-transition login-page')
         $('input').iCheck({
             checkboxClass: 'icheckbox_square-blue',
@@ -43,7 +45,7 @@ class Login extends Component {
             'pedroivofe@gmail.com', 'abc'
         ).then((retorno) => {
             sessionStorage.setItem('dados-usuario', JSON.stringify(retorno.data))
-            history.push('/main')
+            history.push('/main/home')
         })
     }
 
@@ -88,14 +90,14 @@ class Login extends Component {
 
                     <div className="social-auth-links text-center">
                         <p>- OR -</p>
-                        <a href="#" className="btn btn-block btn-social btn-facebook btn-flat"><i className="fa fa-facebook"></i> Sign in using
+                        <a className="btn btn-block btn-social btn-facebook btn-flat"><i className="fa fa-facebook"></i> Sign in using
                         Facebook</a>
-                        <a href="#" className="btn btn-block btn-social btn-google btn-flat"><i className="fa fa-google-plus"></i> Sign in using
+                        <a className="btn btn-block btn-social btn-google btn-flat"><i className="fa fa-google-plus"></i> Sign in using
                         Google+</a>
                     </div>
                     {/* /.social-auth-links */}
-
-                    <a href="#">I forgot my password</a><br />
+                    <Link to="/main/telas">Teste</Link><br /><br />
+                    <a >I forgot my password</a><br />
                     <a href="register.html" className="text-center">Register a new membership</a>
 
                 </div>

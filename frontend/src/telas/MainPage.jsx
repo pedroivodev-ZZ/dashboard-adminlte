@@ -2,7 +2,7 @@ import React, { Component } from 'react'
 
 import Header from '../componentes/base_layout/Header'
 import MainSidebar from '../componentes/base_layout/MainSidebar'
-import ControlSidebar from '../componentes/base_layout/ControlSidebar'
+//import ControlSidebar from '../componentes/base_layout/ControlSidebar'
 import Footer from '../componentes/base_layout/Footer'
 
 import $ from 'jquery'
@@ -19,8 +19,9 @@ class MainPage extends Component {
                 <Header />
                 <MainSidebar />
 
-                {this.props.children}
-
+                <div>
+                    {this.props.children}
+                </div>
                 <Footer />
                 {/* <ControlSidebar /> */}
 

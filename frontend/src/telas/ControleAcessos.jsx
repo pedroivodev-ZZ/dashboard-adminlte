@@ -15,7 +15,7 @@ class ControleAcessos extends Component {
                         <small></small>
                     </h1>
                     <ol className="breadcrumb">
-                        <li><a href="#"><i className="fa fa-dashboard"></i> Controle de Acessos</a></li>
+                        <li><a><i className="fa fa-dashboard"></i> Controle de Acessos</a></li>
                         {/* <li className="active">Tela1</li> */}
                     </ol>
                 </section>

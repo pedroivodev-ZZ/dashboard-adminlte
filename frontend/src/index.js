@@ -74,14 +74,16 @@ import registerServiceWorker from './registerServiceWorker'
 
 const Main = () => (
     <MainPage>
-        <Switch>
-            <Route exact path='/main/' component={Home} />
-            <Route path='/main/tela1' component={Tela1} />
-            <Route path='/main/tela2' component={Tela2} />
-            <Route path='/main/controle_acessos' component={ControleAcessos} />
-            <Route path='/main/controle_usuarios' component={ControleUsuarios} />
-            <Route path='/main/telas' component={Telas} />
-        </Switch>
+        <Route>
+            <Switch>
+                <Route path='/main/home' component={Home} />
+                <Route path='/main/tela1' component={Tela1} />
+                <Route path='/main/tela2' component={Tela2} />
+                <Route path='/main/controle_acessos' component={ControleAcessos} />
+                <Route path='/main/controle_usuarios' component={ControleUsuarios} />
+                <Route path='/main/telas' component={Telas} />
+            </Switch>
+        </Route>
     </MainPage>
 )
 

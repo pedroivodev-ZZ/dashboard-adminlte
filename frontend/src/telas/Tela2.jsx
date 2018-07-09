@@ -15,7 +15,7 @@ class Tela2 extends Component {
                         <small>Tela2 Control panel</small>
                     </h1>
                     <ol className="breadcrumb">
-                        <li><a href="#"><i className="fa fa-dashboard"></i> Home Tela2</a></li>
+                        {/* <li><a href="#"><i className="fa fa-dashboard"></i> Home Tela2</a></li> */}
                         <li className="active">Tela2</li>
                     </ol>
                 </section>

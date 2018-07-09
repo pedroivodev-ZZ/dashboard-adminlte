@@ -10,9 +10,11 @@
   "author": "Pedro Ivo",
   "license": "ISC",
   "dependencies": {
+    "bcrypt": "^1.0.2",
     "body-parser": "^1.18.2",
     "express": "^4.16.3",
     "express-query-int": "^3.0.0",
+    "jsonwebtoken": "^7.3.0",
     "lodash": "^4.17.5",
     "mysql": "^2.14.1",
     "pm2": "^2.10.2"

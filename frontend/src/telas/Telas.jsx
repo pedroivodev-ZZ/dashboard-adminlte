@@ -46,7 +46,7 @@ class Telas extends Component {
                         <small>Controle de telas do sistema</small>
                     </h1>
                     <ol className="breadcrumb">
-                        <li><a href="#"><i className="fa fa-dashboard"></i> Telas</a></li>
+                        <li><a><i className="fa fa-dashboard"></i> Telas</a></li>
                         {/* <li className="active">Tela1</li> */}
                     </ol>
                 </section>
@@ -56,20 +56,6 @@ class Telas extends Component {
                         {
                             this.buildTelas(this.state.telas)
                         }
-                        {/* <li>
-                            Teu cu 1
-                            <ul>
-                                <li>Teu cu 1.1</li>
-                                <li>Teu cu 1.2</li>
-                                <li>Teu cu 1.3
-                                    <ul>
-                                        <li>Teu cu 1.3.1</li>
-                                        <li>Teu cu 1.3.2</li>
-                                        <li>Teu cu 1.3.3</li>
-                                    </ul>
-                                </li>
-                            </ul>
-                        </li> */}
                     </ul>
                 </section>
             </div>
