@@ -8,7 +8,7 @@ export const login = (email, senha) => api.get(`usuarios/login?email=${email}&se
 
 export const listar = () => api.get('usuarios')
 export const cadastrar = (usuario) => api.post('usuarios', usuario)
-export const atualizar = (usuario) => api.put(`usuarios/${usuario._id}`, usuario)
+export const atualizar = (usuario) => api.put(`usuarios/${usuario.id}`, usuario)
 export const remover = (id) => api.delete(`usuarios/${id}`)
 
 export default {

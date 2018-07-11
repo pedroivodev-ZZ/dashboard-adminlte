@@ -1,4 +1,5 @@
 import React, { Component } from 'react'
+import ContentHeader from '../componentes/base_layout/ContentHeader'
 
 class Tela1 extends Component {
     componentDidMount() {
@@ -8,18 +9,7 @@ class Tela1 extends Component {
     render() {
         return (
             <div className="content-wrapper">
-                {/* Content Header (Page header) */}
-                <section className="content-header">
-                    <h1>
-                        Tela1
-                        <small>Tela1 Control panel</small>
-                    </h1>
-                    <ol className="breadcrumb">
-                        {/* <li><a href="#"><i className="fa fa-dashboard"></i> Home Tela1</a></li> */}
-                        <li className="active">Tela1</li>
-                    </ol>
-                </section>
-                {/* Main content */}
+                <ContentHeader title="Tela1" description="Tela1 Control panel" path={['Telas1']} />
                 <section className="content">
                 Tela1
                 </section>

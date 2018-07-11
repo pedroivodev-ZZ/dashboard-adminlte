@@ -15,20 +15,36 @@ class MainSidebar extends Component {
     }
 
     componentDidMount() {
-        //alert(this.props.history)
-        //alert(this.context.history)
-        let dadosUsuario = JSON.parse(sessionStorage.getItem('dados-usuario'))
-        this.setState({ telas: dadosUsuario.telasPermitidas }, () => {
-            //carregarTree()
-        })
+        const {nome, telasPermitidas} = JSON.parse(sessionStorage.getItem('dados-usuario'))
+        
+        this.setState({ nome, telas: telasPermitidas })
+    }
+
+    menuClickHandler(element, parentLevel) {
+        let $parentLi = null
+        switch(parentLevel) {
+            case 1: $parentLi = $(element).parent()
+            break;
+            case 2: $parentLi = $(element).parent().parent()
+            break;
+            case 3: $parentLi = $(element).parent().parent().parent()
+            break;
+        }
+
+        if (!$parentLi.hasClass('menu-open')) {
+            $parentLi.addClass('menu-open')
+            $parentLi.find('ul.treeview-menu').first().slideToggle(300)
+        } else {
+            $parentLi.removeClass('menu-open')
+            $parentLi.find('ul.treeview-menu').first().slideToggle(300)
+        }
     }
 
     buildMenuItem(telas, subItem) {
         telas = !telas ? [] : telas
         if (telas.length > 0) {
-            // data-widget={!subItem ? "tree" : ""}
             return (
-                <ul className={'widget-tree ' +` treeParent${telas[0].fk_id_tela} `+ (!subItem ? "sidebar-menu" : "treeview-menu")}>
+                <ul className={!subItem ? "sidebar-menu" : "treeview-menu"}>
                 {
                     telas.map((tela, index) => {
                         let subTelas = !tela.telas ? [] : tela.telas
@@ -50,53 +66,15 @@ class MainSidebar extends Component {
                             </li>
                             : 
                             <li id={"item-"+tela.id} key={tela.id} className="treeview">
-                                <a onClick={(e) => {
-                                    if (!$(e.target).parent().hasClass('menu-open')) {
-                                        $(e.target).parent().addClass('menu-open')
-                                        $(e.target).parent().find('ul.treeview-menu').first().fadeIn(500)
-                                    } else {
-                                        $(e.target).parent().removeClass('menu-open')
-                                        $(e.target).parent().find('ul.treeview-menu').first().fadeOut(500)
-                                    }
-                                }}>
-                                    <i onClick={(e) => {
-                                        if (!$(e.target).parent().parent().hasClass('menu-open')) {
-                                            $(e.target).parent().parent().addClass('menu-open')
-                                            $(e.target).parent().parent().find('ul.treeview-menu').first().fadeIn(500)
-                                        } else {
-                                            $(e.target).parent().parent().removeClass('menu-open')
-                                            $(e.target).parent().parent().find('ul.treeview-menu').first().fadeOut(500)
-                                        }
-                                    }} className="fa fa-circle-o"></i>
-                                    <span onClick={(e) => {
-                                        if (!$(e.target).parent().parent().hasClass('menu-open')) {
-                                            $(e.target).parent().parent().addClass('menu-open')
-                                            $(e.target).parent().parent().find('ul.treeview-menu').first().fadeIn(500)
-                                        } else {
-                                            $(e.target).parent().parent().removeClass('menu-open')
-                                            $(e.target).parent().parent().find('ul.treeview-menu').first().fadeOut(500)
-                                        }
-                                    }}>{tela.nome}</span>
+                                <a onClick={(e) => { this.menuClickHandler(e.target, 1) }}>
+                                    <i onClick={(e) => { this.menuClickHandler(e.target, 2) }} className="fa fa-circle-o"></i>
+                                    <span onClick={(e) => { this.menuClickHandler(e.target, 2) }}>{tela.nome}</span>
                                     {
                                         (subTelas.length > 0)
-                                        ? <span onClick={(e) => {
-                                            if (!$(e.target).parent().parent().hasClass('menu-open')) {
-                                                $(e.target).parent().parent().addClass('menu-open')
-                                                $(e.target).parent().parent().find('ul.treeview-menu').first().fadeIn(500)
-                                            } else {
-                                                $(e.target).parent().parent().removeClass('menu-open')
-                                                $(e.target).parent().parent().find('ul.treeview-menu').first().fadeOut(500)
-                                            }
-                                        }} className="pull-right-container">
-                                            <i onClick={(e) => {
-                                                if (!$(e.target).parent().parent().parent().hasClass('menu-open')) {
-                                                    $(e.target).parent().parent().parent().addClass('menu-open')
-                                                    $(e.target).parent().parent().parent().find('ul.treeview-menu').first().fadeIn(500)
-                                                } else {
-                                                    $(e.target).parent().parent().parent().removeClass('menu-open')
-                                                    $(e.target).parent().parent().parent().find('ul.treeview-menu').first().fadeOut(500)
-                                                }
-                                            }} className="fa fa-angle-left pull-right"></i>
+                                        ?
+                                        <span onClick={(e) => { this.menuClickHandler(e.target, 2) }} className="pull-right-container">
+                                            <i onClick={(e) => { this.menuClickHandler(e.target, 3) }}
+                                            className="fa fa-angle-left pull-right"></i>
                                         </span>
                                         : null
                                     }
@@ -124,7 +102,7 @@ class MainSidebar extends Component {
                             <img src="dist/img/user2-160x160.jpg" className="img-circle" alt="User" />
                         </div>
                         <div className="pull-left info">
-                            <p>Alexander Pierce</p>
+                            <p>{this.state.nome}</p>
                             <a><i className="fa fa-circle text-success"></i> Online</a>
                         </div>
                     </div>

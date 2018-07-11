@@ -1,4 +1,5 @@
 import React, { Component } from 'react'
+import ContentHeader from '../componentes/base_layout/ContentHeader'
 import TelaApi from '../api/TelaApi'
 
 class Telas extends Component {
@@ -39,18 +40,7 @@ class Telas extends Component {
     render() {
         return (
             <div className="content-wrapper">
-                {/* Content Header (Page header) */}
-                <section className="content-header">
-                    <h1>
-                        Telas
-                        <small>Controle de telas do sistema</small>
-                    </h1>
-                    <ol className="breadcrumb">
-                        <li><a><i className="fa fa-dashboard"></i> Telas</a></li>
-                        {/* <li className="active">Tela1</li> */}
-                    </ol>
-                </section>
-                {/* Main content */}
+                <ContentHeader title="Telas" description="Controle de telas do sistema" path={['Telas']} />
                 <section className="content">
                     <ul>
                         {
