@@ -2,7 +2,7 @@ const _ = require('lodash')
 const bcrypt = require('bcrypt')
 const database = require('../../../config/database')
 
-function login({login, senha, next, nextErroBase }) {
+function login({email, senha, next, nextErroBase }) {
     next = !next ? () => {} : next
     nextErroBase = !nextErroBase ? () => {} : nextErroBase
     let connection = database.getConnection()
@@ -20,7 +20,7 @@ function login({login, senha, next, nextErroBase }) {
     join acessos on acessos.fk_id_grupo = usu.fk_id_grupo
     join grupos on grupos.id = acessos.fk_id_grupo
     join telas on telas.id = acessos.fk_id_tela
-    where email = '${params.email}'`,
+    where email = '${email}'`,
     function (err, results) {
         if (err) {
             nextErroBase({ erroBanco: err })
@@ -30,7 +30,7 @@ function login({login, senha, next, nextErroBase }) {
         let informacoesUsuario = {}
         if (results) {
             if (results.length > 0) {
-                if (!bcrypt.compareSync(params.senha, results[0].senha)) {
+                if (!bcrypt.compareSync(senha, results[0].senha)) {
                     next({informacoesUsuario: null})
                     return
                 }
@@ -84,14 +84,49 @@ function login({login, senha, next, nextErroBase }) {
     connection.end()
 }
 
-/*Usuarios.get('/teste', (req, res, next) => {
-    let params = req.query
+function cadastrar({usuario, next, nextErroBase }) {
+    next = !next ? () => {} : next
+    nextErroBase = !nextErroBase ? () => {} : nextErroBase
 
-    const salt = bcrypt.genSaltSync()
-    const passwordHash = bcrypt.hashSync(params.senha, salt)
+    const {nome, sobrenome, email, senha, } = usuario
 
-    res.json({senha: passwordHash})
-})*/
+    let connection = database.getConnection()
+
+    connection.query(
+    `INSERT INTO usuarios (nome, sobrenome, email, senha, fk_id_grupo)
+     VALUES ('${nome}', '${sobrenome}', '${email}', '${senha}', ${fkIdGrupo})`,
+    function (err, results) {
+        if (err) {
+            nextErroBase({ erroBanco: err })
+            return
+        }
+
+        console.log(results)
+    })
+}
+
+function listar({ next, nextErroBase }) {
+    next = !next ? () => {} : next
+    nextErroBase = !nextErroBase ? () => {} : nextErroBase
+
+    let connection = database.getConnection()
+
+    connection.query(
+        `select usu.nome nome_usuario, usu.sobrenome sobrenome_usuario, usu.email,
+         grupos.id id_grupo, grupos.nome nome_grupo
+         from usuarios usu
+         join grupos on grupos.id = usu.fk_id_grupo`,
+        function (err, usuarios) {
+            if (err) {
+                nextErroBase({ erroBanco: err })
+                return
+            }
+
+            if (usuarios) {
+                next({usuarios})
+            }
+    })
+}
 
 function searchInTelas(telas, telaFilha) {
     for (const i in telas) {
@@ -117,5 +152,5 @@ function getListaAtualizada(lista, itensExcluir) {
 }
 
 module.exports = {
-    login
+    login, cadastrar, listar
 }
