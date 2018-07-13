@@ -1,15 +1,14 @@
 const _ = require('lodash')
 const express = require('express')
 const bcrypt = require('bcrypt')
-const database = require('../../../config/database')
 
 const usuariosDao = require('../../../api/seguranca/base/UsuariosDao')
 const Usuarios = express.Router()
 
 Usuarios.get('/login', (req, res) => {
     usuariosDao.login({
-        email: req.params.login,
-        senha: req.params.senha,
+        email: req.query.email,
+        senha: req.query.senha,
         next: ({informacoesUsuario}) => {
             if (informacoesUsuario) {
                 res.json(_.defaults(informacoesUsuario, {}))
@@ -30,19 +29,37 @@ Usuarios.get('', (req, res) => {
     })
 })
 
-Usuarios.put('', (req, res) => {
-    usuariosDao.listar({
-        next: ({usuarios}) => {
-            res.json(usuarios)
+Usuarios.put('/:id', (req, res) => {
+    usuariosDao.atualizar({
+        id: req.param.id,
+        usuario: req.body,
+        next: () => {
+            res.json({})
         },
         nextErroBase: ({erroBanco}) => {console.log(erroBanco)}
     })
 })
 
-Usuarios.delete('', (req, res) => {
-    usuariosDao.listar({
-        next: ({usuarios}) => {
-            res.json(usuarios)
+Usuarios.put('/alterar_senha/:id', (req, res) => {
+    const salt = bcrypt.genSaltSync()
+
+    const senha = bcrypt.hashSync(req.body.senha, salt)
+
+    usuariosDao.alterarSenha({
+        id: req.param.id,
+        senha,
+        next: () => {
+            res.json({})
+        },
+        nextErroBase: ({erroBanco}) => {console.log(erroBanco)}
+    })
+})
+
+Usuarios.delete('/:id', (req, res) => {
+    usuariosDao.excluir({
+        id: req.param.id,
+        next: () => {
+            res.json({})
         },
         nextErroBase: ({erroBanco}) => {console.log(erroBanco)}
     })

@@ -23,10 +23,42 @@ function getListaAtualizada(lista, itensExcluir) {
     })
 }
 
-function listar({}) {
+function listar({next, nextErroBanco}) {
     let connection = database.getConnection()
 
     connection.query('select * from telas', function (err, results) {
+        if (err) {
+            nextErroBanco({erroBanco: err})
+        }
+
+        next({telas: results})
+    })
+
+    connection.end()
+}
+
+function listarFilhas({idMae, next, nextErroBanco}) {
+    let connection = database.getConnection()
+
+    connection.query(`select * from telas WHERE fk_id_tela = ${idMae}`, function (err, results) {
+        if (err) {
+            nextErroBanco({erroBanco: err})
+        }
+
+        next({telas: results})
+    })
+
+    connection.end()
+}
+
+function listarComoArvore({next, nextErroBanco}) {
+    let connection = database.getConnection()
+
+    connection.query('select * from telas', function (err, results) {
+        if (err) {
+            nextErroBanco({erroBanco: err})
+        }
+
         let idTelasAchadas = []
 
         let telas = results.filter((tela, indice) => {
@@ -46,20 +78,20 @@ function listar({}) {
             telasRestantes = getListaAtualizada(telasRestantes, idTelasAchadas)
         }
 
-        res.json(telas)
+        next({telas})
     })
 
     connection.end()
 }
 
 function cadastrar({tela, next, nextErroBanco}) {
-    let tela = req.body;
+    const {nome, path, idTelaMae} = tela
 
     let connection = database.getConnection()
 
     connection.query(
-       `insert into telas(nome, path, ordem_exibicao${tela.idTelaMae ? ', fk_id_tela' : ''})
-        values('${tela.nome}', '${tela.path}', '${tela.ordemExibicao}'${tela.idTelaMae ? ', ' + tela.idTelaMae : ''})`,
+       `insert into telas(nome, path, fk_id_tela)
+        values('${nome}', '${path}', ${idTelaMae ? idTelaMae : 'null'})`,
         function (err, results) {
             if (err) {
                 nextErroBanco({ erroBanco: err })
@@ -72,14 +104,13 @@ function cadastrar({tela, next, nextErroBanco}) {
     connection.end()
 }
 
-function atualizar({id, tela, next, nextErroBanco}) {
+function alterar({id, tela, next, nextErroBanco}) {
     let connection = database.getConnection()
 
     connection.query(
         `update telas set
             nome = '${tela.nome}',
             path = '${tela.path}',
-            ordem_exibicao = '${tela.ordemExibicao}'
             fk_id_tela = ${!tela.idTelaMae ? 'null' : tela.idTelaMae}
          where id = ${id}`,
          function (err, results) {
@@ -98,7 +129,7 @@ function excluir({id, next, nextErroBanco}) {
     let connection = database.getConnection()
 
     connection.query(
-        `delete from telas where id = ${req.params.id}`,
+        `delete from telas where id = ${id}`,
         function (err, results) {
             if (err) {
                 nextErroBanco({ erroBanco: err })
@@ -128,5 +159,5 @@ function obterPorId({id, next, nextErroBanco}) {
 }
 
 module.exports = {
-    cadastrar, listar, excluir, atualizar, obterPorId, cadastrar
+    cadastrar, listar, listarFilhas, listarComoArvore, excluir, alterar, obterPorId
 }

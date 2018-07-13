@@ -20,7 +20,7 @@ function login({email, senha, next, nextErroBase }) {
     join acessos on acessos.fk_id_grupo = usu.fk_id_grupo
     join grupos on grupos.id = acessos.fk_id_grupo
     join telas on telas.id = acessos.fk_id_tela
-    where email = '${email}'`,
+    where email = '${email}' AND ativo = true`,
     function (err, results) {
         if (err) {
             nextErroBase({ erroBanco: err })
@@ -43,39 +43,42 @@ function login({email, senha, next, nextErroBase }) {
                     },
                     acessos: []
                 }
-            }
 
-            let telasPermitidas = []
-            for (let i = 0; i < results.length; i++) {
-                telasPermitidas.push({
-                    id: results[i].id_tela,
-                    nome: results[i].nome_tela,
-                    fk_id_tela: results[i].fk_id_tela,
-                    path: results[i].path,
-                })
-            }
-
-            let idTelasAchadas = []
-
-            let telasPermitidasOrdenadas = telasPermitidas.filter((tela, indice) => {
-                if (!tela.fk_id_tela) {
-                    idTelasAchadas.push(tela.id)
-                    return true
+                let telasPermitidas = []
+                for (let i = 0; i < results.length; i++) {
+                    telasPermitidas.push({
+                        id: results[i].id_tela,
+                        nome: results[i].nome_tela,
+                        fk_id_tela: results[i].fk_id_tela,
+                        path: results[i].path,
+                    })
                 }
 
-                return false
-            })
+                let idTelasAchadas = []
 
-            let telasRestantes = getListaAtualizada(telasPermitidas, idTelasAchadas)
-            while (telasRestantes.length != 0) {
-                searchInTelas(telasPermitidasOrdenadas, telasRestantes[0])
+                let telasPermitidasOrdenadas = telasPermitidas.filter((tela, indice) => {
+                    if (!tela.fk_id_tela) {
+                        idTelasAchadas.push(tela.id)
+                        return true
+                    }
 
-                idTelasAchadas.push(telasRestantes[0].id)
-                telasRestantes = getListaAtualizada(telasRestantes, idTelasAchadas)
+                    return false
+                })
+
+                let telasRestantes = getListaAtualizada(telasPermitidas, idTelasAchadas)
+                while (telasRestantes.length != 0) {
+                    searchInTelas(telasPermitidasOrdenadas, telasRestantes[0])
+
+                    idTelasAchadas.push(telasRestantes[0].id)
+                    telasRestantes = getListaAtualizada(telasRestantes, idTelasAchadas)
+                }
+
+                informacoesUsuario.telasPermitidas = telasPermitidasOrdenadas
+
+                next({informacoesUsuario})
+            } else {
+                next({informacoesUsuario: null})
             }
-
-            informacoesUsuario.telasPermitidas = telasPermitidasOrdenadas
-            next({informacoesUsuario})
         } else {
             next({informacoesUsuario: null})
         }
@@ -88,7 +91,7 @@ function cadastrar({usuario, next, nextErroBase }) {
     next = !next ? () => {} : next
     nextErroBase = !nextErroBase ? () => {} : nextErroBase
 
-    const {nome, sobrenome, email, senha, } = usuario
+    const {nome, sobrenome, email, senha, fkIdGrupo} = usuario
 
     let connection = database.getConnection()
 
@@ -101,7 +104,72 @@ function cadastrar({usuario, next, nextErroBase }) {
             return
         }
 
-        console.log(results)
+        next(results)
+    })
+}
+
+function alterarSenha({senha, id, next, nextErroBase }) {
+    next = !next ? () => {} : next
+    nextErroBase = !nextErroBase ? () => {} : nextErroBase
+
+    let connection = database.getConnection()
+
+    connection.query(
+    `UPDATE usuarios
+     SET senha = '${senha}'
+     WHERE id = ${id}`,
+    function (err, results) {
+        if (err) {
+            nextErroBase({ erroBanco: err })
+            return
+        }
+
+        next(results)
+    })
+}
+
+function atualizar({usuario, next, nextErroBase }) {
+    next = !next ? () => {} : next
+    nextErroBase = !nextErroBase ? () => {} : nextErroBase
+
+    const {id, nome, sobrenome, email, fkIdGrupo } = usuario
+
+    let connection = database.getConnection()
+
+    connection.query(
+    `UPDATE usuarios
+     SET nome = '${nome}',
+         sobrenome = '${sobrenome}',
+         email = '${email}',
+         fk_id_grupo = ${fkIdGrupo}
+     WHERE id = ${id}`,
+    function (err, results) {
+        if (err) {
+            nextErroBase({ erroBanco: err })
+            return
+        }
+
+        next(results)
+    })
+}
+
+function excluir({id, next, nextErroBase }) {
+    next = !next ? () => {} : next
+    nextErroBase = !nextErroBase ? () => {} : nextErroBase
+
+    let connection = database.getConnection()
+
+    connection.query(
+    `UPDATE usuarios
+     SET ativo = false
+     WHERE id = ${id}`,
+    function (err, results) {
+        if (err) {
+            nextErroBase({ erroBanco: err })
+            return
+        }
+
+        next(results)
     })
 }
 
@@ -152,5 +220,5 @@ function getListaAtualizada(lista, itensExcluir) {
 }
 
 module.exports = {
-    login, cadastrar, listar
+    login, cadastrar, atualizar, excluir, listar, alterarSenha
 }

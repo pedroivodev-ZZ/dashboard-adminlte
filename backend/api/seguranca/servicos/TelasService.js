@@ -1,183 +1,67 @@
-//const _ = require('lodash')
 const express = require('express')
-const database = require('../../../config/database')
+const telasDao = require('../base/TelasDao')
 const Telas = express.Router()
 
-function searchInTelas(telas, telaFilha) {
-    for (const i in telas) {
-        if (!telas[i].telas) {
-            telas[i].telas = []
-        }
-
-        if (telaFilha.fk_id_tela == telas[i].id) {
-            telas[i].telas.push(telaFilha)
-            break;
-        }
-
-        if (telas[i].telas.length > 0) {
-            searchInTelas(telas[i].telas, telaFilha)
-        }
-    }
-}
-
-function getListaAtualizada(lista, itensExcluir) {
-    return lista.filter((item, index) => {
-        return itensExcluir.indexOf(item.id) == -1
-    })
-}
-
 Telas.get('', (req, res) => {
-    let connection = database.getConnection()
-
-    connection.query('select * from telas', function (err, results) {
-        let idTelasAchadas = []
-
-        let telas = results.filter((tela, indice) => {
-            if (!tela.fk_id_tela) {
-                idTelasAchadas.push(tela.id)
-                return true
-            }
-
-            return false
-        })
-
-        let telasRestantes = getListaAtualizada(results, idTelasAchadas)
-        while (telasRestantes.length != 0) {
-            searchInTelas(telas, telasRestantes[0])
-
-            idTelasAchadas.push(telasRestantes[0].id)
-            telasRestantes = getListaAtualizada(telasRestantes, idTelasAchadas)
+    telasDao.listar({
+        next: ({telas}) => {
+            res.json(telas)
         }
-
-        res.json(telas)
     })
-
-    connection.end()
 })
 
-Telas.get('/filtrar', (req, res) => {
-    let raiz = false
-    if (req.query.raiz != undefined) {
-        raiz = (req.query.raiz == 'true')
-    }
-
-    let connection = database.getConnection()
-
-    connection.query(`select * from telas ${raiz ? 'where fk_id_tela is null' : ''}`, function (err, results) {
-        res.json(results)
+Telas.get('/filhas', (req, res) => {
+    telasDao.listarFilhas({
+        idMae: req.query.id_mae,
+        next: ({telas}) => {
+            res.json(telas)
+        }
     })
+})
 
-    connection.end()
+Telas.get('/arvore', (req, res) => {
+    telasDao.listarComoArvore({
+        next: ({telas}) => {
+            res.json(telas)
+        }
+    })
 })
 
 Telas.post('', (req, res) => {
-    let tela = req.body;
-
-    let connection = database.getConnection()
-
-    connection.query(
-       `insert into telas(nome, path, ordem_exibicao${tela.idTelaMae ? ', fk_id_tela' : ''})
-        values('${tela.nome}', '${tela.path}', '${tela.ordemExibicao}'${tela.idTelaMae ? ', ' + tela.idTelaMae : ''})`,
-        function (err, results) {
-            res.json({ status: 1 })
-        })
-
-    connection.end()
+    telasDao.cadastrar({
+        tela: req.body,
+        next: ({status}) => {
+            res.json(status)
+        }
+    })
 })
 
 Telas.put('/:id', (req, res) => {
-    let tela = req.body;
-    let connection = database.getConnection()
-
-    connection.query(
-        `update telas set
-            nome = '${tela.nome}',
-            path = '${tela.path}',
-            ordem_exibicao = '${tela.ordemExibicao}'
-            fk_id_tela = ${!tela.idTelaMae ? 'null' : tela.idTelaMae}
-         where id = ${req.params.id}`, function (err, results) {
-            res.json({ status: 1 })
-        })
-
-    connection.end()
+    telasDao.alterar({
+        id: req.params.id,
+        tela: req.body,
+        next: ({status}) => {
+            res.json(status)
+        }
+    })
 })
 
 Telas.delete('/:id', (req, res) => {
-    let connection = database.getConnection()
-
-    connection.query(
-        `delete from telas where id = ${req.params.id}`,
-        function (err, results) {
-            res.json({ status: 1 })
-        })
-
-    connection.end()
+    telasDao.excluir({
+        id: req.params.id,
+        next: ({status}) => {
+            res.json(status)
+        }
+    })
 })
 
 Telas.get('/:id', (req, res) => {
-    let connection = database.getConnection()
-
-    connection.query(`select * from telas where id = ${req.params.id}`, function (err, results) {
-        res.json(results)
-    })
-
-    connection.end()
-})
-
-module.exports = Telas
-/*const Telas = require('../base/Telas')
-
-Telas.methods(['get', 'post', 'put', 'delete'])
-Telas.updateOptions({ new: true, runValidators: true })
-
-Telas
-    .after('get', sendErrorsOrNext)
-    .after('post', sendErrorsOrNext)
-    .after('put', sendErrorsOrNext)
-    .after('delete', sendErrorsOrNext)
-
-function sendErrorsOrNext(req, res, next) {
-    const bundle = res.locals.bundle
-    if (bundle.errors) {
-        var errors = parseErrors(bundle.errors)
-        console.log(JSON.stringify(bundle.errors))
-        res.status(500).json({ errors })
-    } else {
-        console.log('segue o baile')
-        next()
-    }
-}
-
-function parseErrors(nodeRestfulErrors) {
-    const errors = []
-
-    _.forIn(nodeRestfulErrors, error => errors.push(error.message))
-
-    return errors;
-}
-
-Telas.route('filtar', (req, res, next) => {
-    if (req.query.raiz != undefined) {
-        req.query.raiz = (req.query.raiz == 'true')
-    }
-
-    Telas.find(req.query, (error, result) => {
-        if (error) {
-            res.status(500).json({ errors: [error] })
-        } else {
-            res.json(_.defaults(result, {}))
+    telasDao.obterPorId({
+        id: req.params.id,
+        next: ({tela}) => {
+            res.json(tela)
         }
     })
 })
-
-Telas.route('count', (req, res, next) => {
-    Telas.count((error, value) => {
-        if (error) {
-            res.status(500).json({ errors: [error] })
-        } else {
-            res.json({ value })
-        }
-    })
-})*/
 
 module.exports = Telas

@@ -1,4 +1,3 @@
-//const express = require('express')
 const apiUrl = '/api'
 
 const telasService = require('../api/seguranca/servicos/TelasService')
