@@ -11,7 +11,7 @@ class Telas extends Component {
     }
     componentDidMount() {
         window.dispatchEvent(new Event('resize'))
-        TelaApi.listar().then((retorno) => {
+        TelaApi.listarComoArvore().then((retorno) => {
             this.setState({telas: retorno.data})
         })
     }
