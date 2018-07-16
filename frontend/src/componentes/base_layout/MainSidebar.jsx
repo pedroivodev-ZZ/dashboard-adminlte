@@ -18,6 +18,8 @@ class MainSidebar extends Component {
         const {nome, telasPermitidas} = JSON.parse(sessionStorage.getItem('dados-usuario'))
         
         this.setState({ nome, telas: telasPermitidas })
+
+        //PubSub.
     }
 
     menuClickHandler(element, parentLevel) {

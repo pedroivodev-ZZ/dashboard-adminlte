@@ -20,7 +20,6 @@ class Login extends Component {
     }
 
     componentDidMount() {
-        //this.props.history.push("/main/telas");
         $('body').prop('class', 'hold-transition login-page')
         $('input').iCheck({
             checkboxClass: 'icheckbox_square-blue',

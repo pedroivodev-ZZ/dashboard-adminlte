@@ -19,6 +19,9 @@ import 'admin-lte/bower_components/bootstrap-datepicker/dist/css/bootstrap-datep
 import 'admin-lte/bower_components/bootstrap-daterangepicker/daterangepicker.css'
 // bootstrap wysihtml5 - text editor
 import 'admin-lte/plugins/bootstrap-wysihtml5/bootstrap3-wysihtml5.min.css'
+
+//import 'admin-lte/bower_components/datatables.net-bs/css/dataTables.bootstrap.min.css'
+
 import './css/geral.css'
 
 import 'jquery/src/jquery'
@@ -50,6 +53,10 @@ import 'admin-lte/bower_components/bootstrap-datepicker/dist/js/bootstrap-datepi
 import 'admin-lte/bower_components/jquery-slimscroll/jquery.slimscroll.min'
 // FastClick
 import 'admin-lte/bower_components/fastclick/lib/fastclick'
+
+//import 'admin-lte/bower_components/datatables.net/js/jquery.dataTables.min'
+//import 'admin-lte/bower_components/datatables.net-bs/js/dataTables.bootstrap.min'
+
 // AdminLTE App
 //import 'admin-lte/dist/js/adminlte.min'
 //import 'admin-lte/dist/js/adminlte'
