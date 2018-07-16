@@ -1,41 +1,46 @@
-const _ = require('lodash')
-/*const Grupos = require('../base/Grupos')
+const express = require('express')
+const gruposDao = require('../base/GruposDao')
 
-Grupos.methods(['get', 'post', 'put', 'delete'])
-Grupos.updateOptions({ new: true, runValidators: true })
-
-Grupos
-    .after('get', sendErrorsOrNext)
-    .after('post', sendErrorsOrNext)
-    .after('put', sendErrorsOrNext)
-    .after('delete', sendErrorsOrNext)
-
-function sendErrorsOrNext(req, res, next) {
-    const bundle = res.locals.bundle
-    if (bundle.errors) {
-        var errors = parseErrors(bundle.errors)
-        res.status(500).json({ errors })
-    } else {
-        next()
-    }
-}
-
-function parseErrors(nodeRestfulErrors) {
-    const errors = []
-
-    _.forIn(nodeRestfulErrors, error => errors.push(error.message))
-
-    return errors;
-}
-
-Grupos.route('count', (req, res, next) => {
-    Grupos.count((error, value) => {
-        if (error) {
-            res.status(500).json({ errors: [error] })
-        } else {
-            res.json({ value })
+const Grupos = express.Router()
+.get('/', (req, res) => {
+    gruposDao.listar({
+        next: ({grupos}) => {
+            res.json(grupos)
+        }
+    })
+})
+.post('/', (req, res) => {
+    gruposDao.cadastrar({
+        grupo: req.body,
+        next: ({grupo}) => {
+            res.json(grupo)
+        }
+    })
+})
+.put('/:id', (req, res) => {
+    gruposDao.atualizar({
+        grupo: req.body,
+        id: req.params.id,
+        next: ({status}) => {
+            res.json(status)
+        }
+    })
+})
+.delete('/:id', (req, res) => {
+    gruposDao.excluir({
+        id: req.params.id,
+        next: ({status}) => {
+            res.json(status)
+        }
+    })
+})
+.get('/:id', (req, res) => {
+    gruposDao.obterPorId({
+        id: req.params.id,
+        next: ({grupo}) => {
+            res.json(grupo)
         }
     })
 })
 
-module.exports = Grupos*/
+module.exports = Grupos

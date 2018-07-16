@@ -1,41 +1,108 @@
 const _ = require('lodash')
-/*const Grupos = require('../base/Grupos')
+const database = require('../../../config/database')
 
-Grupos.methods(['get', 'post', 'put', 'delete'])
-Grupos.updateOptions({ new: true, runValidators: true })
+function cadastrar({grupo, next, nextErroBase }) {
+    next = !next ? () => {} : next
+    nextErroBase = !nextErroBase ? () => {} : nextErroBase
 
-Grupos
-    .after('get', sendErrorsOrNext)
-    .after('post', sendErrorsOrNext)
-    .after('put', sendErrorsOrNext)
-    .after('delete', sendErrorsOrNext)
+    const {nome} = grupo
 
-function sendErrorsOrNext(req, res, next) {
-    const bundle = res.locals.bundle
-    if (bundle.errors) {
-        var errors = parseErrors(bundle.errors)
-        res.status(500).json({ errors })
-    } else {
-        next()
-    }
-}
+    const connection = database.getConnection()
 
-function parseErrors(nodeRestfulErrors) {
-    const errors = []
-
-    _.forIn(nodeRestfulErrors, error => errors.push(error.message))
-
-    return errors;
-}
-
-Grupos.route('count', (req, res, next) => {
-    Grupos.count((error, value) => {
-        if (error) {
-            res.status(500).json({ errors: [error] })
-        } else {
-            res.json({ value })
+    connection.query('INSERT INTO grupos (nome) VALUES (?)', [nome],
+    function (err, results) {
+        if (err) {
+            nextErroBase({ erroBanco: err.sqlMessage })
+            return
         }
-    })
-})
 
-module.exports = Grupos*/
+        next({
+            grupo: {
+                id: results.insertId,
+                nome
+            }
+        })
+    })
+}
+
+function atualizar({grupo, next, nextErroBase }) {
+    next = !next ? () => {} : next
+    nextErroBase = !nextErroBase ? () => {} : nextErroBase
+
+    const {id, nome} = grupo
+
+    const connection = database.getConnection()
+
+    connection.query('UPDATE grupos SET nome = ? WHERE id = ?', [nome, id],
+    function (err) {
+        if (err) {
+            nextErroBase({ erroBanco: err.sqlMessage })
+            return
+        }
+
+        next({ status: 1 })
+    })
+}
+
+function excluir({id, next, nextErroBase }) {
+    next = !next ? () => {} : next
+    nextErroBase = !nextErroBase ? () => {} : nextErroBase
+
+    const connection = database.getConnection()
+
+    connection.query('DELETE FROM grupos WHERE id = ?', [id],
+    function (err) {
+        if (err) {
+            nextErroBase({ erroBanco: err.sqlMessage })
+            return
+        }
+
+        next({ status: 1 })
+    })
+}
+
+function obterPorId({ id, next, nextErroBase }) {
+    next = !next ? () => {} : next
+    nextErroBase = !nextErroBase ? () => {} : nextErroBase
+
+    const connection = database.getConnection()
+
+    connection.query('select grupos.id, grupos.nome from grupos where grupos.id = ?', [id],
+        function (err, grupos) {
+            if (err) {
+                nextErroBase({ erroBanco: err.sqlMessage })
+                return
+            }
+
+            if (grupos) {
+                next({grupo: grupos.length == 1 ? grupos[0] : null})
+            } else {
+                next({grupo: null})
+            }
+        }
+    )
+}
+
+function listar({ next, nextErroBase }) {
+    next = !next ? () => {} : next
+    nextErroBase = !nextErroBase ? () => {} : nextErroBase
+
+    const connection = database.getConnection()
+
+    connection.query('select grupos.id, grupos.nome from grupos',
+        function (err, grupos) {
+            if (err) {
+                nextErroBase({ erroBanco: err.sqlMessage })
+                return
+            }
+
+            if (grupos) {
+                next({grupos})
+            }
+        }
+    )
+}
+
+module.exports = {
+    cadastrar, atualizar, excluir, listar, obterPorId
+}

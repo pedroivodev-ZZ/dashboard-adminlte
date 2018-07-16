@@ -1,16 +1,54 @@
-const _ = require('lodash')
-/*const Acessos = require('../base/Acessos')
+const express = require('express')
+const acessosDao = require('../base/AcessosDao')
 
-function obterAcessos(req, res) {
-    Acessos.find({
-        'grupo._id': req.query.grupo
-    }, (error, result) => {
-        if (error) {
-            res.status(500).json({ errors: [error] })
-        } else {
-            res.json(_.defaults(result, {}))
+const Acessos = express.Router()
+.get('/', (req, res) => {
+    acessosDao.listar({
+        next: ({acessos}) => {
+            res.json(acessos)
         }
     })
-}
+})
+.post('/', (req, res) => {
+    acessosDao.cadastrar({
+        acesso: req.body,
+        next: ({acesso}) => {
+            res.json(acesso)
+        }
+    })
+})
+.put('/:id', (req, res) => {
+    acessosDao.atualizar({
+        acesso: req.body,
+        id: req.params.id,
+        next: ({status}) => {
+            res.json(status)
+        }
+    })
+})
+.delete('/:id', (req, res) => {
+    acessosDao.excluir({
+        id: req.params.id,
+        next: ({status}) => {
+            res.json(status)
+        }
+    })
+})
+.get('/:id', (req, res) => {
+    acessosDao.obterPorId({
+        id: req.params.id,
+        next: ({acesso}) => {
+            res.json(acesso)
+        }
+    })
+})
+.get('/acessos_por_grupo', (req, res) => {
+    acessosDao.listarPorGrupo({
+        fkIdGrupo: req.query.id_grupo,
+        next: ({}) => {
+            res.json(tela)
+        }
+    })
+})
 
-module.exports = { obterAcessos }*/
+module.exports = Acessos

@@ -1,11 +1,10 @@
 const _ = require('lodash')
 const express = require('express')
 const bcrypt = require('bcrypt')
-
 const usuariosDao = require('../../../api/seguranca/base/UsuariosDao')
-const Usuarios = express.Router()
 
-Usuarios.get('/login', (req, res) => {
+const UsuariosService = express.Router()
+.get('/login', (req, res) => {
     usuariosDao.login({
         email: req.query.email,
         senha: req.query.senha,
@@ -19,8 +18,7 @@ Usuarios.get('/login', (req, res) => {
         nextErroBase: ({erroBanco}) => { }
     })
 })
-
-Usuarios.get('', (req, res) => {
+.get('/', (req, res) => {
     usuariosDao.listar({
         next: ({usuarios}) => {
             res.json(usuarios)
@@ -28,8 +26,16 @@ Usuarios.get('', (req, res) => {
         nextErroBase: ({erroBanco}) => {console.log(erroBanco)}
     })
 })
-
-Usuarios.put('/:id', (req, res) => {
+.get('/:id', (req, res) => {
+    usuariosDao.listar({
+        id: req.param.id,
+        next: ({usuario}) => {
+            res.json(usuario)
+        },
+        nextErroBase: ({erroBanco}) => {console.log(erroBanco)}
+    })
+})
+.put('/:id', (req, res) => {
     usuariosDao.atualizar({
         id: req.param.id,
         usuario: req.body,
@@ -39,8 +45,7 @@ Usuarios.put('/:id', (req, res) => {
         nextErroBase: ({erroBanco}) => {console.log(erroBanco)}
     })
 })
-
-Usuarios.put('/alterar_senha/:id', (req, res) => {
+.put('/alterar_senha/:id', (req, res) => {
     const salt = bcrypt.genSaltSync()
 
     const senha = bcrypt.hashSync(req.body.senha, salt)
@@ -54,8 +59,7 @@ Usuarios.put('/alterar_senha/:id', (req, res) => {
         nextErroBase: ({erroBanco}) => {console.log(erroBanco)}
     })
 })
-
-Usuarios.delete('/:id', (req, res) => {
+.delete('/:id', (req, res) => {
     usuariosDao.excluir({
         id: req.param.id,
         next: () => {
@@ -64,8 +68,7 @@ Usuarios.delete('/:id', (req, res) => {
         nextErroBase: ({erroBanco}) => {console.log(erroBanco)}
     })
 })
-
-Usuarios.post('', (req, res) => {
+.post('/', (req, res) => {
     let usuario = req.body
     const { senha } = usuario
     const salt = bcrypt.genSaltSync()
@@ -81,4 +84,4 @@ Usuarios.post('', (req, res) => {
     })
 })
 
-module.exports = Usuarios
+module.exports = UsuariosService

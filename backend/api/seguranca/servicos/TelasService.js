@@ -1,16 +1,15 @@
 const express = require('express')
 const telasDao = require('../base/TelasDao')
-const Telas = express.Router()
 
-Telas.get('', (req, res) => {
+const Telas = express.Router()
+.get('/', (req, res) => {
     telasDao.listar({
         next: ({telas}) => {
             res.json(telas)
         }
     })
 })
-
-Telas.get('/filhas', (req, res) => {
+.get('/filhas', (req, res) => {
     telasDao.listarFilhas({
         idMae: req.query.id_mae,
         next: ({telas}) => {
@@ -18,16 +17,14 @@ Telas.get('/filhas', (req, res) => {
         }
     })
 })
-
-Telas.get('/arvore', (req, res) => {
+.get('/arvore', (req, res) => {
     telasDao.listarComoArvore({
         next: ({telas}) => {
             res.json(telas)
         }
     })
 })
-
-Telas.post('', (req, res) => {
+.post('/', (req, res) => {
     telasDao.cadastrar({
         tela: req.body,
         next: ({status}) => {
@@ -35,8 +32,7 @@ Telas.post('', (req, res) => {
         }
     })
 })
-
-Telas.put('/:id', (req, res) => {
+.put('/:id', (req, res) => {
     telasDao.alterar({
         id: req.params.id,
         tela: req.body,
@@ -45,8 +41,7 @@ Telas.put('/:id', (req, res) => {
         }
     })
 })
-
-Telas.delete('/:id', (req, res) => {
+.delete('/:id', (req, res) => {
     telasDao.excluir({
         id: req.params.id,
         next: ({status}) => {
@@ -54,8 +49,7 @@ Telas.delete('/:id', (req, res) => {
         }
     })
 })
-
-Telas.get('/:id', (req, res) => {
+.get('/:id', (req, res) => {
     telasDao.obterPorId({
         id: req.params.id,
         next: ({tela}) => {

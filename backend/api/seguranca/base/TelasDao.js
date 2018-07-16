@@ -24,11 +24,12 @@ function getListaAtualizada(lista, itensExcluir) {
 }
 
 function listar({next, nextErroBanco}) {
-    let connection = database.getConnection()
+    const connection = database.getConnection()
 
     connection.query('select * from telas', function (err, results) {
         if (err) {
-            nextErroBanco({erroBanco: err})
+            nextErroBanco({erroBanco: err.sqlMessage})
+            return
         }
 
         next({telas: results})
@@ -38,11 +39,12 @@ function listar({next, nextErroBanco}) {
 }
 
 function listarFilhas({idMae, next, nextErroBanco}) {
-    let connection = database.getConnection()
+    const connection = database.getConnection()
 
-    connection.query(`select * from telas WHERE fk_id_tela = ${idMae}`, function (err, results) {
+    connection.query('select * from telas WHERE fk_id_tela = ?', [idMae], function (err, results) {
         if (err) {
-            nextErroBanco({erroBanco: err})
+            nextErroBanco({erroBanco: err.sqlMessage})
+            return
         }
 
         next({telas: results})
@@ -52,11 +54,12 @@ function listarFilhas({idMae, next, nextErroBanco}) {
 }
 
 function listarComoArvore({next, nextErroBanco}) {
-    let connection = database.getConnection()
+    const connection = database.getConnection()
 
     connection.query('select * from telas', function (err, results) {
         if (err) {
-            nextErroBanco({erroBanco: err})
+            nextErroBanco({erroBanco: err.sqlMessage})
+            return
         }
 
         let idTelasAchadas = []
@@ -87,14 +90,14 @@ function listarComoArvore({next, nextErroBanco}) {
 function cadastrar({tela, next, nextErroBanco}) {
     const {nome, path, idTelaMae} = tela
 
-    let connection = database.getConnection()
+    const connection = database.getConnection()
 
     connection.query(
        `insert into telas(nome, path, fk_id_tela)
-        values('${nome}', '${path}', ${idTelaMae ? idTelaMae : 'null'})`,
+        values(?, ?, ?)`, [nome, path, idTelaMae],
         function (err, results) {
             if (err) {
-                nextErroBanco({ erroBanco: err })
+                nextErroBanco({ erroBanco: err.sqlMessage })
                 return
             }
 
@@ -105,17 +108,19 @@ function cadastrar({tela, next, nextErroBanco}) {
 }
 
 function alterar({id, tela, next, nextErroBanco}) {
-    let connection = database.getConnection()
+    const {id, nome, path, idTelaMae} = tela
+
+    const connection = database.getConnection()
 
     connection.query(
         `update telas set
-            nome = '${tela.nome}',
-            path = '${tela.path}',
-            fk_id_tela = ${!tela.idTelaMae ? 'null' : tela.idTelaMae}
-         where id = ${id}`,
+            nome = ?,
+            path = ?,
+            fk_id_tela = ?
+         where id = ?`, [nome, path, idTelaMae, id],
          function (err, results) {
             if (err) {
-                nextErroBanco({ erroBanco: err })
+                nextErroBanco({ erroBanco: err.sqlMessage })
                 return
             }
 
@@ -126,13 +131,12 @@ function alterar({id, tela, next, nextErroBanco}) {
 }
 
 function excluir({id, next, nextErroBanco}) {
-    let connection = database.getConnection()
+    const connection = database.getConnection()
 
-    connection.query(
-        `delete from telas where id = ${id}`,
+    connection.query('delete from telas where id = ?', [id],
         function (err, results) {
             if (err) {
-                nextErroBanco({ erroBanco: err })
+                nextErroBanco({ erroBanco: err.sqlMessage })
                 return
             }
 
@@ -143,12 +147,12 @@ function excluir({id, next, nextErroBanco}) {
 }
 
 function obterPorId({id, next, nextErroBanco}) {
-    let connection = database.getConnection()
+    const connection = database.getConnection()
 
-    connection.query(`select * from telas where id = ${id}`,
+    connection.query('select * from telas where id = ?', [id],
     function (err, results) {
         if (err) {
-            nextErroBanco({ erroBanco: err })
+            nextErroBanco({ erroBanco: err.sqlMessage })
             return
         }
 

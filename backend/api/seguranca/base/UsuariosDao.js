@@ -5,7 +5,7 @@ const database = require('../../../config/database')
 function login({email, senha, next, nextErroBase }) {
     next = !next ? () => {} : next
     nextErroBase = !nextErroBase ? () => {} : nextErroBase
-    let connection = database.getConnection()
+    const connection = database.getConnection()
 
     connection.query(
     `select usu.nome nome_usuario, usu.sobrenome sobrenome_usuario,
@@ -20,10 +20,10 @@ function login({email, senha, next, nextErroBase }) {
     join acessos on acessos.fk_id_grupo = usu.fk_id_grupo
     join grupos on grupos.id = acessos.fk_id_grupo
     join telas on telas.id = acessos.fk_id_tela
-    where email = '${email}' AND ativo = true`,
+    where email = ? AND ativo = true`, [email],
     function (err, results) {
         if (err) {
-            nextErroBase({ erroBanco: err })
+            nextErroBase({ erroBanco: err.sqlMessage })
             return
         }
 
@@ -93,14 +93,14 @@ function cadastrar({usuario, next, nextErroBase }) {
 
     const {nome, sobrenome, email, senha, fkIdGrupo} = usuario
 
-    let connection = database.getConnection()
+    const connection = database.getConnection()
 
     connection.query(
     `INSERT INTO usuarios (nome, sobrenome, email, senha, fk_id_grupo)
-     VALUES ('${nome}', '${sobrenome}', '${email}', '${senha}', ${fkIdGrupo})`,
+     VALUES (?, ?, ?, ?, ?)`, [nome, sobrenome, email, senha, fkIdGrupo],
     function (err, results) {
         if (err) {
-            nextErroBase({ erroBanco: err })
+            nextErroBase({ erroBanco: err.sqlMessage })
             return
         }
 
@@ -112,15 +112,15 @@ function alterarSenha({senha, id, next, nextErroBase }) {
     next = !next ? () => {} : next
     nextErroBase = !nextErroBase ? () => {} : nextErroBase
 
-    let connection = database.getConnection()
+    const connection = database.getConnection()
 
     connection.query(
     `UPDATE usuarios
-     SET senha = '${senha}'
-     WHERE id = ${id}`,
+     SET senha = ?
+     WHERE id = ?`, [senha, id],
     function (err, results) {
         if (err) {
-            nextErroBase({ erroBanco: err })
+            nextErroBase({ erroBanco: err.sqlMessage })
             return
         }
 
@@ -134,18 +134,18 @@ function atualizar({usuario, next, nextErroBase }) {
 
     const {id, nome, sobrenome, email, fkIdGrupo } = usuario
 
-    let connection = database.getConnection()
+    const connection = database.getConnection()
 
     connection.query(
     `UPDATE usuarios
-     SET nome = '${nome}',
-         sobrenome = '${sobrenome}',
-         email = '${email}',
-         fk_id_grupo = ${fkIdGrupo}
-     WHERE id = ${id}`,
+     SET nome = ?,
+         sobrenome = ?,
+         email = ?,
+         fk_id_grupo = ?
+     WHERE id = ?`, [nome, sobrenome, email, fkIdGrupo, id],
     function (err, results) {
         if (err) {
-            nextErroBase({ erroBanco: err })
+            nextErroBase({ erroBanco: err.sqlMessage })
             return
         }
 
@@ -157,15 +157,15 @@ function excluir({id, next, nextErroBase }) {
     next = !next ? () => {} : next
     nextErroBase = !nextErroBase ? () => {} : nextErroBase
 
-    let connection = database.getConnection()
+    const connection = database.getConnection()
 
     connection.query(
     `UPDATE usuarios
      SET ativo = false
-     WHERE id = ${id}`,
+     WHERE id = ?`, [id],
     function (err, results) {
         if (err) {
-            nextErroBase({ erroBanco: err })
+            nextErroBase({ erroBanco: err.sqlMessage })
             return
         }
 
@@ -173,11 +173,37 @@ function excluir({id, next, nextErroBase }) {
     })
 }
 
+function obterPorId({ id, next, nextErroBase }) {
+    next = !next ? () => {} : next
+    nextErroBase = !nextErroBase ? () => {} : nextErroBase
+
+    const connection = database.getConnection()
+
+    connection.query(
+        `select usu.nome nome_usuario, usu.sobrenome sobrenome_usuario, usu.email,
+         grupos.id id_grupo, grupos.nome nome_grupo
+         from usuarios usu
+         join grupos on grupos.id = usu.fk_id_grupo
+         where usu.id = ?`, [id],
+        function (err, usuarios) {
+            if (err) {
+                nextErroBase({ erroBanco: err.sqlMessage })
+                return
+            }
+
+            if (usuarios) {
+                next({usuario: usuarios.length == 1 ? usuarios[0] : null})
+            } else {
+                next({usuario: null})
+            }
+    })
+}
+
 function listar({ next, nextErroBase }) {
     next = !next ? () => {} : next
     nextErroBase = !nextErroBase ? () => {} : nextErroBase
 
-    let connection = database.getConnection()
+    const connection = database.getConnection()
 
     connection.query(
         `select usu.nome nome_usuario, usu.sobrenome sobrenome_usuario, usu.email,
@@ -186,7 +212,7 @@ function listar({ next, nextErroBase }) {
          join grupos on grupos.id = usu.fk_id_grupo`,
         function (err, usuarios) {
             if (err) {
-                nextErroBase({ erroBanco: err })
+                nextErroBase({ erroBanco: err.sqlMessage })
                 return
             }
 
@@ -220,5 +246,5 @@ function getListaAtualizada(lista, itensExcluir) {
 }
 
 module.exports = {
-    login, cadastrar, atualizar, excluir, listar, alterarSenha
+    login, cadastrar, atualizar, excluir, listar, obterPorId, alterarSenha
 }
