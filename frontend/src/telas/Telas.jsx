@@ -5,21 +5,32 @@ import TelaApi from '../api/TelaApi'
 
 import $ from 'jquery'
 import '../fixes/jquery-fix'
-//import 'admin-lte/bower_components/bootstrap/dist/js/bootstrap.min'
+import 'admin-lte/bower_components/bootstrap/js/modal'
 
 class Telas extends Component {
     constructor() {
         super()
         this.state = {
-            telas: []
+            alteracao: false,
+            telas: [], nome: '', path: '', idTelaMae: '0'
         }
+
+        this.idTela = 0
     }
     componentDidMount() {
+        this.editar = this.editar.bind(this)
+
         window.dispatchEvent(new Event('resize'))
 
         TelaApi.listar().then((retorno) => {
             this.setState({ telas: retorno.data })
         })
+    }
+
+    set(nomeCampo, event) {
+        let state =  {}
+        state[nomeCampo] = event.target.value
+        this.setState(state)
     }
 
     buildTelas(telas) {
@@ -40,6 +51,54 @@ class Telas extends Component {
             )
         } else {
             return null
+        }
+    }
+
+    editar({ tela }) {
+        this.idTela = tela.id
+        this.setState({ alteracao: true, nome: tela.nome, path: tela.path, idTelaMae: tela.fk_id_tela })
+        $('#modal_tela').modal('toggle')
+    }
+
+    excluir() {
+
+    }
+
+    salvarAlteracoes() {
+        if (this.state.alteracao) {
+            TelaApi.atualizar({
+                id: this.idTela,
+                nome: this.state.nome,
+                path: this.state.path,
+                idTelaMae: this.state.idTelaMae
+            })
+            .then((dado) => {
+                console.log(dado)
+                $('#modal_tela').modal('toggle')
+                this.idTela = 0
+                this.setState({ nome: '', path: '' })
+
+                TelaApi.listar().then((retorno) => {
+                    this.setState({ telas: retorno.data })
+                })
+            })
+            .catch(err => console.log(err))
+        } else {
+            TelaApi.cadastrar({
+                nome: this.state.nome,
+                path: this.state.path
+            })
+            .then(res => res.json())
+            .then((dado) => {
+                $('#modal_tela').modal('toggle')
+                this.idTela = 0
+                this.setState({ nome: '', path: '' })
+
+                TelaApi.listar().then((retorno) => {
+                    this.setState({ telas: retorno.data })
+                })
+            })
+            .catch(err => console.log(err))
         }
     }
 
@@ -64,37 +123,67 @@ class Telas extends Component {
                                             </tr>
                                         </thead>
                                         <tbody>
-                                        {
-                                            this.state.telas.map((tela, index) =>
-                                                <tr key={index}>
-                                                    <td style={{with: '45%'}}>{tela.nome}</td>
-                                                    <td style={{with: '50%'}}>{tela.path}</td>
-                                                    <td style={{with: '5%', textAlign: 'center'}}>
-                                                        <button onClick={() => {
-                                                            $('#teste').modal('toggle')
-                                                        }} style={{marginRight: '5px'}} className="btn btn-warning btn-flat">
-                                                            <i class="fa fa-edit"></i>
-                                                        </button>
-                                                        <button className="btn btn-danger btn-flat">
-                                                            <i class="fa fa-remove"></i>
-                                                        </button>
-                                                    </td>
-                                                </tr>
-                                            )
-                                        }
+                                            {
+                                                this.state.telas.map((tela, index) =>
+                                                    <tr key={index}>
+                                                        <td style={{ with: '45%' }}>{tela.nome}</td>
+                                                        <td style={{ with: '50%' }}>{tela.path}</td>
+                                                        <td style={{ with: '5%', textAlign: 'center' }}>
+                                                            <button onClick={
+                                                            () => {
+                                                                this.editar({ tela })
+                                                            }
+                                                            } style={{ marginRight: '5px' }} className="btn btn-warning btn-flat">
+                                                                <i className="fa fa-edit"></i>
+                                                            </button>
+                                                            <button className="btn btn-danger btn-flat">
+                                                                <i className="fa fa-remove"></i>
+                                                            </button>
+                                                        </td>
+                                                    </tr>
+                                                )
+                                            }
                                         </tbody>
                                     </table>
                                 </div>
                             </div>
                         </div>
                     </div>
-                    {/* <ul>
-                        {
-                            this.buildTelas(this.state.telas)
-                        }
-                    </ul> */}
-                    <Modal titulo="Teste" modalId="teste">
-                        Testando
+                    <Modal titulo={this.state.alteracao ? "Edição" : "Cadastro"} modalId="modal_tela"
+                    salvarOnClick={this.salvarAlteracoes.bind(this)}>
+                        <div className="form-horizontal">
+                            <div className="form-group">
+                                <label htmlFor="slTelas" className="col-sm-2 control-label">Nome</label>
+
+                                <div className="col-sm-10">
+                                    <select ref="txtNome" className="form-control"
+                                    value={!this.state.idTelaMae ? '0' : this.state.idTelaMae} onChange={this.set.bind(this, 'idTelaMae')}>
+                                        <option value="0">--- SELECIONE ---</option>
+                                        {
+                                            this.state.telas.map((tela, index) =>
+                                                <option key={index} value={tela.id}>{tela.nome}</option>
+                                            )
+                                        }  
+                                    </select>
+                                </div>
+                            </div>
+                            <div className="form-group">
+                                <label htmlFor="txtNome" className="col-sm-2 control-label">Nome</label>
+
+                                <div className="col-sm-10">
+                                    <input type="text" className="form-control" ref="txtNome" placeholder="Nome"
+                                    value={this.state.nome} onChange={this.set.bind(this, 'nome')} />
+                                </div>
+                            </div>
+                            <div className="form-group">
+                                <label htmlFor="txtPath" className="col-sm-2 control-label">Caminho</label>
+
+                                <div className="col-sm-10">
+                                    <input type="text" className="form-control" ref="txtPath" placeholder="Caminho"
+                                    value={this.state.path} onChange={this.set.bind(this, 'path')} />
+                                </div>
+                            </div>
+                        </div>
                     </Modal>
                 </section>
             </div>
