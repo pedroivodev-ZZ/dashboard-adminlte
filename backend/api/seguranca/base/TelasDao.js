@@ -24,6 +24,9 @@ function getListaAtualizada(lista, itensExcluir) {
 }
 
 function listar({next, nextErroBanco}) {
+    next = !next ? () => {} : next
+    nextErroBanco = !nextErroBanco ? () => {} : nextErroBanco
+
     const connection = database.getConnection()
 
     connection.query('select * from telas', function (err, results) {
@@ -39,6 +42,9 @@ function listar({next, nextErroBanco}) {
 }
 
 function listarFilhas({idMae, next, nextErroBanco}) {
+    next = !next ? () => {} : next
+    nextErroBanco = !nextErroBanco ? () => {} : nextErroBanco
+
     const connection = database.getConnection()
 
     connection.query('select * from telas WHERE fk_id_tela = ?', [idMae], function (err, results) {
@@ -54,6 +60,9 @@ function listarFilhas({idMae, next, nextErroBanco}) {
 }
 
 function listarComoArvore({next, nextErroBanco}) {
+    next = !next ? () => {} : next
+    nextErroBanco = !nextErroBanco ? () => {} : nextErroBanco
+
     const connection = database.getConnection()
 
     connection.query('select * from telas', function (err, results) {
@@ -88,6 +97,9 @@ function listarComoArvore({next, nextErroBanco}) {
 }
 
 function cadastrar({tela, next, nextErroBanco}) {
+    next = !next ? () => {} : next
+    nextErroBanco = !nextErroBanco ? () => {} : nextErroBanco
+
     const {nome, path, idTelaMae} = tela
 
     const connection = database.getConnection()
@@ -108,7 +120,11 @@ function cadastrar({tela, next, nextErroBanco}) {
 }
 
 function alterar({id, tela, next, nextErroBanco}) {
-    const {id, nome, path, idTelaMae} = tela
+
+    next = !next ? () => {} : next
+    nextErroBanco = !nextErroBanco ? () => {} : nextErroBanco
+
+    const { nome, path, idTelaMae} = tela
 
     const connection = database.getConnection()
 
@@ -117,7 +133,7 @@ function alterar({id, tela, next, nextErroBanco}) {
             nome = ?,
             path = ?,
             fk_id_tela = ?
-         where id = ?`, [nome, path, idTelaMae, id],
+         where id = ?`, [nome, path, !idTelaMae ? null : idTelaMae, id],
          function (err, results) {
             if (err) {
                 nextErroBanco({ erroBanco: err.sqlMessage })
@@ -131,6 +147,9 @@ function alterar({id, tela, next, nextErroBanco}) {
 }
 
 function excluir({id, next, nextErroBanco}) {
+    next = !next ? () => {} : next
+    nextErroBanco = !nextErroBanco ? () => {} : nextErroBanco
+
     const connection = database.getConnection()
 
     connection.query('delete from telas where id = ?', [id],
@@ -147,6 +166,9 @@ function excluir({id, next, nextErroBanco}) {
 }
 
 function obterPorId({id, next, nextErroBanco}) {
+    next = !next ? () => {} : next
+    nextErroBanco = !nextErroBanco ? () => {} : nextErroBanco
+
     const connection = database.getConnection()
 
     connection.query('select * from telas where id = ?', [id],
