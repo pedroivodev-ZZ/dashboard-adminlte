@@ -5,7 +5,7 @@ const Telas = express.Router()
 .get('/', (req, res) => {
     telasDao.listar({
         next: ({telas}) => {
-            res.json(telas)
+            res.json({responseStatus:1, telas})
         }
     })
 })
@@ -13,22 +13,22 @@ const Telas = express.Router()
     telasDao.listarFilhas({
         idMae: req.query.id_mae,
         next: ({telas}) => {
-            res.json(telas)
+            res.json({responseStatus:1, telas})
         }
     })
 })
 .get('/arvore', (req, res) => {
     telasDao.listarComoArvore({
         next: ({telas}) => {
-            res.json(telas)
+            res.json({responseStatus:1, telas})
         }
     })
 })
 .post('/', (req, res) => {
     telasDao.cadastrar({
         tela: req.body,
-        next: ({status}) => {
-            res.json(status)
+        next: ({tela}) => {
+            res.json({responseStatus:1, tela})
         }
     })
 })
@@ -37,7 +37,7 @@ const Telas = express.Router()
         id: req.params.id,
         tela: req.body,
         next: ({status}) => {
-            res.json(status)
+            res.json({responseStatus:1})
         }
     })
 })
@@ -45,7 +45,7 @@ const Telas = express.Router()
     telasDao.excluir({
         id: req.params.id,
         next: ({status}) => {
-            res.json(status)
+            res.json({responseStatus:1})
         }
     })
 })
@@ -53,7 +53,7 @@ const Telas = express.Router()
     telasDao.obterPorId({
         id: req.params.id,
         next: ({tela}) => {
-            res.json(tela)
+            res.json({responseStatus:1, tela})
         }
     })
 })

@@ -146,6 +146,41 @@ function listarPorGrupo({ fkIdGrupo, next, nextErroBase }) {
     )
 }
 
+/*function listarTelasPorUsuario({usuario, next, nextErroBanco}) {
+    next = !next ? () => {} : next
+    nextErroBanco = !nextErroBanco ? () => {} : nextErroBanco
+
+    const connection = database.getConnection()
+
+    connection.query(`select * from telas`, function (err, results) {
+        if (err) {
+            nextErroBanco({erroBanco: err.sqlMessage})
+            return
+        }
+
+        let idTelasAchadas = []
+
+        let telas = results.filter((tela, indice) => {
+            if (!tela.fk_id_tela) {
+                idTelasAchadas.push(tela.id)
+                return true
+            }
+
+            return false
+        })
+
+        let telasRestantes = getListaAtualizada(results, idTelasAchadas)
+        while (telasRestantes.length != 0) {
+            searchInTelas(telas, telasRestantes[0])
+
+            idTelasAchadas.push(telasRestantes[0].id)
+            telasRestantes = getListaAtualizada(telasRestantes, idTelasAchadas)
+        }
+
+        next({telas})
+    })
+}*/
+
 module.exports = {
     cadastrar, atualizar, excluir, listar, listarPorGrupo, obterPorId
 }

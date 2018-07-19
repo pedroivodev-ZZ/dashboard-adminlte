@@ -113,7 +113,12 @@ function cadastrar({tela, next, nextErroBanco}) {
                 return
             }
 
-            next({ status: 1 })
+            next({
+                tela: {
+                    id: results.insertId,
+                    nome, path, idTelaMae
+                }
+            })
         })
 
     connection.end()
