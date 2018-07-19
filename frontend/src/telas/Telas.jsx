@@ -1,7 +1,12 @@
 import React, { Component } from 'react'
+import PubSub from 'pubsub-js'
+
 import ContentHeader from '../componentes/base_layout/ContentHeader'
 import Modal from '../componentes/modal/Modal'
+import Box from '../componentes/base_layout/Box'
 import TelaApi from '../api/TelaApi'
+
+import { ATUALIZAR_MENU } from '../PubSubMessages.ts'
 
 import $ from 'jquery'
 import '../fixes/jquery-fix'
@@ -22,8 +27,8 @@ class Telas extends Component {
 
         window.dispatchEvent(new Event('resize'))
 
-        TelaApi.listar().then((retorno) => {
-            this.setState({ telas: retorno.data })
+        TelaApi.listar().then(({data}) => {
+            this.setState({ telas: data.telas })
         })
     }
 
@@ -54,14 +59,26 @@ class Telas extends Component {
         }
     }
 
+    abrirCadastroNovaTela() {
+        this.setState({ alteracao: false, nome: '', path: '', idTelaMae: '0' })
+        $('#modal_tela').modal('toggle')
+    }
+
     editar({ tela }) {
         this.idTela = tela.id
         this.setState({ alteracao: true, nome: tela.nome, path: tela.path, idTelaMae: tela.fk_id_tela })
         $('#modal_tela').modal('toggle')
     }
 
-    excluir() {
-
+    excluir({tela}) {
+        TelaApi.remover(tela.id)
+        .then((dado) => {
+            this.idTela = 0
+            TelaApi.listar().then(({data}) => {
+                this.setState({ telas: data.telas })
+            })
+        })
+        .catch(err => console.log(err))
     }
 
     salvarAlteracoes() {
@@ -73,13 +90,15 @@ class Telas extends Component {
                 idTelaMae: this.state.idTelaMae
             })
             .then((dado) => {
-                console.log(dado)
                 $('#modal_tela').modal('toggle')
                 this.idTela = 0
+
+                PubSub.publish(ATUALIZAR_MENU)
+
                 this.setState({ nome: '', path: '' })
 
-                TelaApi.listar().then((retorno) => {
-                    this.setState({ telas: retorno.data })
+                TelaApi.listar().then(({data}) => {
+                    this.setState({ telas: data.telas })
                 })
             })
             .catch(err => console.log(err))
@@ -92,10 +111,13 @@ class Telas extends Component {
             .then((dado) => {
                 $('#modal_tela').modal('toggle')
                 this.idTela = 0
+
+                PubSub.publish(ATUALIZAR_MENU)
+
                 this.setState({ nome: '', path: '' })
 
-                TelaApi.listar().then((retorno) => {
-                    this.setState({ telas: retorno.data })
+                TelaApi.listar().then(({data}) => {
+                    this.setState({ telas: data.telas })
                 })
             })
             .catch(err => console.log(err))
@@ -109,44 +131,41 @@ class Telas extends Component {
                 <section className="content">
                     <div className="row">
                         <div className="col-xs-12">
-                            <div className="box">
-                                <div className="box-header">
-                                    <h3 className="box-title">Total: {this.state.telas.length}</h3>
-                                </div>
-                                <div className="box-body">
-                                    <table ref="example1" className="table table-bordered table-hover">
-                                        <thead>
-                                            <tr>
-                                                <th>Nome</th>
-                                                <th>Path</th>
-                                                <th>Ações</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            {
-                                                this.state.telas.map((tela, index) =>
-                                                    <tr key={index}>
-                                                        <td style={{ with: '45%' }}>{tela.nome}</td>
-                                                        <td style={{ with: '50%' }}>{tela.path}</td>
-                                                        <td style={{ with: '5%', textAlign: 'center' }}>
-                                                            <button onClick={
-                                                            () => {
-                                                                this.editar({ tela })
-                                                            }
-                                                            } style={{ marginRight: '5px' }} className="btn btn-warning btn-flat">
-                                                                <i className="fa fa-edit"></i>
-                                                            </button>
-                                                            <button className="btn btn-danger btn-flat">
-                                                                <i className="fa fa-remove"></i>
-                                                            </button>
-                                                        </td>
-                                                    </tr>
-                                                )
-                                            }
-                                        </tbody>
-                                    </table>
-                                </div>
-                            </div>
+                            <Box titulo={"Total: " + this.state.telas.length} novoButtonText="Nova tela"
+                                novoButtonClick={this.abrirCadastroNovaTela.bind(this)}>
+                                <table ref="tblTelas" className="table table-bordered table-hover">
+                                    <thead>
+                                        <tr>
+                                            <th>Nome</th>
+                                            <th>Path</th>
+                                            <th>Ações</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {
+                                            this.state.telas.map((tela, index) =>
+                                                <tr key={index}>
+                                                    <td style={{ with: '45%' }}>{tela.nome}</td>
+                                                    <td style={{ with: '50%' }}>{tela.path}</td>
+                                                    <td style={{ with: '5%', textAlign: 'center' }}>
+                                                        <button onClick={() => {
+                                                            this.editar({ tela })
+                                                        }}
+                                                        style={{ marginRight: '5px' }} className="btn btn-warning btn-flat">
+                                                            <i className="fa fa-edit"></i>
+                                                        </button>
+                                                        <button onClick={() => {
+                                                            this.excluir({ tela })
+                                                        }} className="btn btn-danger btn-flat">
+                                                            <i className="fa fa-remove"></i>
+                                                        </button>
+                                                    </td>
+                                                </tr>
+                                            )
+                                        }
+                                    </tbody>
+                                </table>
+                            </Box>
                         </div>
                     </div>
                     <Modal titulo={this.state.alteracao ? "Edição" : "Cadastro"} modalId="modal_tela"

@@ -5,11 +5,11 @@ const api = axios.create({
 })
 
 export const listar = () => api.get(`/`)
-export const listarTelasPorUsuario = () => api.get(`/listar_por_usuario`)
+export const listarTelasPorUsuario = (usuario) => api.get(`/listar_por_usuario/?usuario=${usuario}`)
 export const cadastrar = (acesso) => api.post('/', acesso)
 export const atualizar = (acesso) => api.put(`/${acesso.id}`, acesso)
 export const remover = (id) => api.delete(`/${id}`)
 
 export default {
-    listar, cadastrar, atualizar, remover
+    listar, listarTelasPorUsuario, cadastrar, atualizar, remover
 }

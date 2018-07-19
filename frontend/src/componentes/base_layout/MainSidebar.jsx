@@ -1,5 +1,10 @@
 import React, { Component } from 'react'
+import PubSub from 'pubsub-js'
 import { Link } from 'react-router-dom'
+
+import { ATUALIZAR_MENU } from '../../PubSubMessages.ts'
+
+import AcessosApi from '../../api/AcessosApi'
 
 import $ from 'jquery'
 import '../../fixes/jquery-fix'
@@ -19,7 +24,12 @@ class MainSidebar extends Component {
         
         this.setState({ nome, telas: telasPermitidas })
 
-        //PubSub.
+        PubSub.subscribe(ATUALIZAR_MENU, () => {
+            AcessosApi.listarTelasPorUsuario()
+            .then(({data}) => {
+
+            })
+        })
     }
 
     menuClickHandler(element, parentLevel) {
