@@ -64,13 +64,13 @@ import './fixes/adminlte-fix'
 
 import React from 'react'
 import ReactDOM from 'react-dom'
-import { Switch, Route, BrowserRouter, Link } from 'react-router-dom'
+import { Switch, Route, BrowserRouter } from 'react-router-dom'
 
 import Login from './telas/Login'
 import MainPage from './telas/MainPage'
 
 import Home from './telas/Home'
-import Tela1 from './telas/Tela1'
+import Grupos from './telas/Grupos'
 import Tela2 from './telas/Tela2'
 
 import Telas from './telas/Telas'
@@ -83,7 +83,7 @@ const Main = () => (
     <BrowserRouter>
         <MainPage>
             <Route exact path='/main/home' component={Home} />
-            <Route path='/main/tela1' component={Tela1} />
+            <Route path='/main/grupos' component={Grupos} />
             <Route path='/main/tela2' component={Tela2} />
             <Route path='/main/controle_acessos' component={ControleAcessos} />
             <Route path='/main/controle_usuarios' component={ControleUsuarios} />

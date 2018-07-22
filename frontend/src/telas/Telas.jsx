@@ -1,9 +1,11 @@
-import React, { Component } from 'react'
+import React from 'react'
+import ComponentCustom from '../componentes/ComponentCustom'
 import PubSub from 'pubsub-js'
 
 import ContentHeader from '../componentes/base_layout/ContentHeader'
 import Modal from '../componentes/modal/Modal'
 import Box from '../componentes/base_layout/Box'
+import Table from '../componentes/base_layout/Table'
 import TelaApi from '../api/TelaApi'
 
 import { ATUALIZAR_MENU } from '../PubSubMessages.ts'
@@ -12,7 +14,7 @@ import $ from 'jquery'
 import '../fixes/jquery-fix'
 import 'admin-lte/bower_components/bootstrap/js/modal'
 
-class Telas extends Component {
+class Telas extends ComponentCustom {
     constructor() {
         super()
         this.state = {
@@ -22,20 +24,15 @@ class Telas extends Component {
 
         this.idTela = 0
     }
+ 
     componentDidMount() {
-        this.editar = this.editar.bind(this)
-
         window.dispatchEvent(new Event('resize'))
+
+        this.editar = this.editar.bind(this)
 
         TelaApi.listar().then(({data}) => {
             this.setState({ telas: data.telas })
         })
-    }
-
-    set(nomeCampo, event) {
-        let state =  {}
-        state[nomeCampo] = event.target.value
-        this.setState(state)
     }
 
     buildTelas(telas) {
@@ -60,6 +57,7 @@ class Telas extends Component {
     }
 
     abrirCadastroNovaTela() {
+        this.idTela = 0
         this.setState({ alteracao: false, nome: '', path: '', idTelaMae: '0' })
         $('#modal_tela').modal('toggle')
     }
@@ -72,8 +70,11 @@ class Telas extends Component {
 
     excluir({tela}) {
         TelaApi.remover(tela.id)
-        .then((dado) => {
+        .then(({data}) => {
             this.idTela = 0
+
+            PubSub.publish(ATUALIZAR_MENU)
+
             TelaApi.listar().then(({data}) => {
                 this.setState({ telas: data.telas })
             })
@@ -107,7 +108,6 @@ class Telas extends Component {
                 nome: this.state.nome,
                 path: this.state.path
             })
-            .then(res => res.json())
             .then((dado) => {
                 $('#modal_tela').modal('toggle')
                 this.idTela = 0
@@ -133,38 +133,27 @@ class Telas extends Component {
                         <div className="col-xs-12">
                             <Box titulo={"Total: " + this.state.telas.length} novoButtonText="Nova tela"
                                 novoButtonClick={this.abrirCadastroNovaTela.bind(this)}>
-                                <table ref="tblTelas" className="table table-bordered table-hover">
-                                    <thead>
-                                        <tr>
-                                            <th>Nome</th>
-                                            <th>Path</th>
-                                            <th>Ações</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        {
-                                            this.state.telas.map((tela, index) =>
-                                                <tr key={index}>
-                                                    <td style={{ with: '45%' }}>{tela.nome}</td>
-                                                    <td style={{ with: '50%' }}>{tela.path}</td>
-                                                    <td style={{ with: '5%', textAlign: 'center' }}>
-                                                        <button onClick={() => {
-                                                            this.editar({ tela })
-                                                        }}
-                                                        style={{ marginRight: '5px' }} className="btn btn-warning btn-flat">
-                                                            <i className="fa fa-edit"></i>
-                                                        </button>
-                                                        <button onClick={() => {
-                                                            this.excluir({ tela })
-                                                        }} className="btn btn-danger btn-flat">
-                                                            <i className="fa fa-remove"></i>
-                                                        </button>
-                                                    </td>
-                                                </tr>
-                                            )
-                                        }
-                                    </tbody>
-                                </table>
+                                <Table headers={['Nome', 'Path', 'Ações']} list={this.state.telas} 
+                                rowBuilder={
+                                    (tela, index) =>
+                                    <tr key={index}>
+                                        <td style={{ with: '45%' }}>{tela.nome}</td>
+                                        <td style={{ with: '50%' }}>{tela.path}</td>
+                                        <td style={{ with: '5%', textAlign: 'center' }}>
+                                            <button onClick={() => {
+                                                this.editar({ tela })
+                                            }}
+                                            style={{ marginRight: '5px' }} className="btn btn-warning btn-flat">
+                                                <i className="fa fa-edit"></i>
+                                            </button>
+                                            <button onClick={() => {
+                                                this.excluir({ tela })
+                                            }} className="btn btn-danger btn-flat">
+                                                <i className="fa fa-remove"></i>
+                                            </button>
+                                        </td>
+                                    </tr>
+                                } />
                             </Box>
                         </div>
                     </div>
