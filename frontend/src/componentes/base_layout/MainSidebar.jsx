@@ -20,15 +20,22 @@ class MainSidebar extends Component {
     }
 
     componentDidMount() {
-        const {nome, telasPermitidas} = JSON.parse(sessionStorage.getItem('dados-usuario'))
-        
-        this.setState({ nome, telas: telasPermitidas })
+        const {nome} = JSON.parse(sessionStorage.getItem('dados-usuario'))
+
+        this.montarMenu()
+
+        this.setState({ nome })
 
         PubSub.subscribe(ATUALIZAR_MENU, () => {
-            AcessosApi.listarTelasPorUsuario()
-            .then(({data}) => {
+            this.montarMenu()
+        })
+    }
 
-            })
+    montarMenu() {
+        const { grupo } = JSON.parse(sessionStorage.getItem('dados-usuario'))
+        AcessosApi.listarTelasPorGrupo(grupo.id)
+        .then(({data}) => {
+            this.setState({ telas: data.telas })
         })
     }
 
