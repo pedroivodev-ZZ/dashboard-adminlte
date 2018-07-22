@@ -5,7 +5,7 @@ const Grupos = express.Router()
 .get('/', (req, res) => {
     gruposDao.listar({
         next: ({grupos}) => {
-            res.json(grupos)
+            res.json({responseStatus:1, grupos})
         }
     })
 })
@@ -13,7 +13,7 @@ const Grupos = express.Router()
     gruposDao.cadastrar({
         grupo: req.body,
         next: ({grupo}) => {
-            res.json(grupo)
+            res.json({responseStatus:1, grupo})
         }
     })
 })
@@ -22,7 +22,7 @@ const Grupos = express.Router()
         grupo: req.body,
         id: req.params.id,
         next: ({status}) => {
-            res.json(status)
+            res.json({responseStatus:1})
         }
     })
 })
@@ -30,7 +30,7 @@ const Grupos = express.Router()
     gruposDao.excluir({
         id: req.params.id,
         next: ({status}) => {
-            res.json(status)
+            res.json({responseStatus:1})
         }
     })
 })
@@ -38,7 +38,7 @@ const Grupos = express.Router()
     gruposDao.obterPorId({
         id: req.params.id,
         next: ({grupo}) => {
-            res.json(grupo)
+            res.json({responseStatus:1, grupo})
         }
     })
 })

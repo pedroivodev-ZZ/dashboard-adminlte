@@ -120,67 +120,86 @@ function listar({ next, nextErroBase }) {
     )
 }
 
-function listarPorGrupo({ fkIdGrupo, next, nextErroBase }) {
+function listarTelasPorGrupo({ fkIdGrupo, next, nextErroBase }) {
     next = !next ? () => {} : next
     nextErroBase = !nextErroBase ? () => {} : nextErroBase
 
     const connection = database.getConnection()
 
     connection.query(
-        `select acessos.id id, telas.id id_tela, telas.nome nome_tela, telas.path, telas.path,
-        grupos.id id_grupo, grupos.nome nome_grupo
+        `select telas.id id_tela,
+        telas.nome nome_tela,
+        telas.fk_id_tela,
+        telas.path
         from acessos
-        join grupos on grupos.id = acessos.fk_id_grupo
         join telas on telas.id = acessos.fk_id_tela
         where acessos.fk_id_grupo = ?`, [fkIdGrupo],
-        function (err, acessos) {
+        function (err, telas) {
             if (err) {
                 nextErroBase({ erroBanco: err.sqlMessage })
                 return
             }
 
-            if (acessos) {
-                next({acessos})
+            if (telas) {
+
+                let telasPermitidas = []
+                for (let i = 0; i < telas.length; i++) {
+                    telasPermitidas.push({
+                        id: telas[i].id_tela,
+                        nome: telas[i].nome_tela,
+                        fk_id_tela: telas[i].fk_id_tela,
+                        path: telas[i].path,
+                    })
+                }
+
+                let idTelasAchadas = []
+
+                let telasPermitidasOrdenadas = telasPermitidas.filter((tela, indice) => {
+                    if (!tela.fk_id_tela) {
+                        idTelasAchadas.push(tela.id)
+                        return true
+                    }
+
+                    return false
+                })
+
+                let telasRestantes = getListaAtualizada(telasPermitidas, idTelasAchadas)
+                while (telasRestantes.length != 0) {
+                    searchInTelas(telasPermitidasOrdenadas, telasRestantes[0])
+
+                    idTelasAchadas.push(telasRestantes[0].id)
+                    telasRestantes = getListaAtualizada(telasRestantes, idTelasAchadas)
+                }
+
+                next({telas: telasPermitidasOrdenadas})
             }
         }
     )
 }
 
-/*function listarTelasPorUsuario({usuario, next, nextErroBanco}) {
-    next = !next ? () => {} : next
-    nextErroBanco = !nextErroBanco ? () => {} : nextErroBanco
-
-    const connection = database.getConnection()
-
-    connection.query(`select * from telas`, function (err, results) {
-        if (err) {
-            nextErroBanco({erroBanco: err.sqlMessage})
-            return
+function searchInTelas(telas, telaFilha) {
+    for (const i in telas) {
+        if (!telas[i].telas) {
+            telas[i].telas = []
         }
 
-        let idTelasAchadas = []
-
-        let telas = results.filter((tela, indice) => {
-            if (!tela.fk_id_tela) {
-                idTelasAchadas.push(tela.id)
-                return true
-            }
-
-            return false
-        })
-
-        let telasRestantes = getListaAtualizada(results, idTelasAchadas)
-        while (telasRestantes.length != 0) {
-            searchInTelas(telas, telasRestantes[0])
-
-            idTelasAchadas.push(telasRestantes[0].id)
-            telasRestantes = getListaAtualizada(telasRestantes, idTelasAchadas)
+        if (telaFilha.fk_id_tela == telas[i].id) {
+            telas[i].telas.push(telaFilha)
+            break;
         }
 
-        next({telas})
+        if (telas[i].telas.length > 0) {
+            searchInTelas(telas[i].telas, telaFilha)
+        }
+    }
+}
+
+function getListaAtualizada(lista, itensExcluir) {
+    return lista.filter((item, index) => {
+        return itensExcluir.indexOf(item.id) == -1
     })
-}*/
+}
 
 module.exports = {
-    cadastrar, atualizar, excluir, listar, listarPorGrupo, obterPorId
+    cadastrar, atualizar, excluir, listar, listarTelasPorGrupo, obterPorId
 }
