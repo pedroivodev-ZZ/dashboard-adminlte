@@ -6,6 +6,8 @@ import ContentHeader from '../componentes/base_layout/ContentHeader'
 import Modal from '../componentes/modal/Modal'
 import Box from '../componentes/base_layout/Box'
 import Table from '../componentes/base_layout/Table'
+import EditButton from '../componentes/buttons/EditButton'
+import RemoveButton from '../componentes/buttons/RemoveButton'
 import TelaApi from '../api/TelaApi'
 
 import { ATUALIZAR_MENU } from '../PubSubMessages.ts'
@@ -140,17 +142,9 @@ class Telas extends ComponentCustom {
                                         <td style={{ with: '45%' }}>{tela.nome}</td>
                                         <td style={{ with: '50%' }}>{tela.path}</td>
                                         <td style={{ with: '5%', textAlign: 'center' }}>
-                                            <button onClick={() => {
-                                                this.editar({ tela })
-                                            }}
-                                            style={{ marginRight: '5px' }} className="btn btn-warning btn-flat">
-                                                <i className="fa fa-edit"></i>
-                                            </button>
-                                            <button onClick={() => {
-                                                this.excluir({ tela })
-                                            }} className="btn btn-danger btn-flat">
-                                                <i className="fa fa-remove"></i>
-                                            </button>
+                                            <EditButton style={{ marginRight: '5px' }}
+                                            clickAction={() => {this.editar({ tela })}} />
+                                            <RemoveButton clickAction={() => {this.excluir({ tela })}} />
                                         </td>
                                     </tr>
                                 } />

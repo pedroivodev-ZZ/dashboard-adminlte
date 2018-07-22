@@ -6,6 +6,8 @@ import ContentHeader from '../componentes/base_layout/ContentHeader'
 import Modal from '../componentes/modal/Modal'
 import Box from '../componentes/base_layout/Box'
 import Table from '../componentes/base_layout/Table'
+import EditButton from '../componentes/buttons/EditButton'
+import RemoveButton from '../componentes/buttons/RemoveButton'
 import GruposApi from '../api/GruposApi'
 
 import $ from 'jquery'
@@ -106,17 +108,9 @@ class Grupos extends ComponentCustom {
                                     <tr key={index}>
                                         <td style={{ with: '45%' }}>{grupo.nome}</td>
                                         <td style={{ with: '5%', textAlign: 'center' }}>
-                                            <button onClick={() => {
-                                                this.editar({ grupo })
-                                            }}
-                                            style={{ marginRight: '5px' }} className="btn btn-warning btn-flat">
-                                                <i className="fa fa-edit"></i>
-                                            </button>
-                                            <button onClick={() => {
-                                                this.excluir({ grupo })
-                                            }} className="btn btn-danger btn-flat">
-                                                <i className="fa fa-remove"></i>
-                                            </button>
+                                            <EditButton style={{ marginRight: '5px' }}
+                                            clickAction={() => {this.editar({ grupo })}} />
+                                            <RemoveButton clickAction={() => {this.excluir({ grupo })}} />
                                         </td>
                                     </tr>
                                 } />
