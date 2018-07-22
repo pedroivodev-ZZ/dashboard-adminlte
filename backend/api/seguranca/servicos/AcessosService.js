@@ -1,3 +1,4 @@
+const _ = require('lodash')
 const express = require('express')
 const acessosDao = require('../base/AcessosDao')
 
@@ -5,7 +6,7 @@ const Acessos = express.Router()
 .get('/', (req, res) => {
     acessosDao.listar({
         next: ({acessos}) => {
-            res.json(acessos)
+            res.json({responseStatus:1, acessos})
         }
     })
 })
@@ -13,7 +14,7 @@ const Acessos = express.Router()
     acessosDao.cadastrar({
         acesso: req.body,
         next: ({acesso}) => {
-            res.json(acesso)
+            res.json({responseStatus:1, acesso})
         }
     })
 })
@@ -22,7 +23,7 @@ const Acessos = express.Router()
         acesso: req.body,
         id: req.params.id,
         next: ({status}) => {
-            res.json(status)
+            res.json({responseStatus:1 })
         }
     })
 })
@@ -30,23 +31,28 @@ const Acessos = express.Router()
     acessosDao.excluir({
         id: req.params.id,
         next: ({status}) => {
-            res.json(status)
+            res.json({responseStatus:1 })
         }
     })
 })
-.get('/:id', (req, res) => {
-    acessosDao.obterPorId({
-        id: req.params.id,
-        next: ({acesso}) => {
-            res.json(acesso)
-        }
-    })
+.get('/:id', (req, res, next) => {
+    //verifica se está sendo requisitada uma url ou apenas passando um valor pro banco buscar
+    if (!isNaN(req.params.id)) {
+        acessosDao.obterPorId({
+            id: req.params.id,
+            next: ({acesso}) => {
+                res.json({responseStatus:1, acesso})
+            }
+        })
+    } else {
+        next()
+    }
 })
-.get('/acessos_por_grupo', (req, res) => {
-    acessosDao.listarPorGrupo({
+.get('/telas_por_grupo', (req, res) => {
+    acessosDao.listarTelasPorGrupo({
         fkIdGrupo: req.query.id_grupo,
-        next: ({}) => {
-            res.json(tela)
+        next: ({telas}) => {
+            res.json({responseStatus:1, telas})
         }
     })
 })
