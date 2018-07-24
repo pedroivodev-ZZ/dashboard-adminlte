@@ -40,7 +40,7 @@ function atualizar({grupo, next, nextErroBase }) {
             return
         }
 
-        next({ status: 1 })
+        next({ grupo })
     })
 }
 
