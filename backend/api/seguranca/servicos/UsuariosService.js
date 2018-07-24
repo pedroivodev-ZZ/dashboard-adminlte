@@ -10,9 +10,9 @@ const UsuariosService = express.Router()
         senha: req.query.senha,
         next: ({informacoesUsuario}) => {
             if (informacoesUsuario) {
-                res.json(_.defaults(informacoesUsuario, {}))
+                res.json({responseStatus:1, usuario: informacoesUsuario})
             } else {
-                res.json({erro: 'Login Inválido'})
+                res.json({responseStatus:-2, usuario: informacoesUsuario})
             }
         },
         nextErroBase: ({erroBanco}) => { }
@@ -21,29 +21,39 @@ const UsuariosService = express.Router()
 .get('/', (req, res) => {
     usuariosDao.listar({
         next: ({usuarios}) => {
-            res.json(usuarios)
+            res.json({responseStatus:1, usuarios})
         },
         nextErroBase: ({erroBanco}) => {console.log(erroBanco)}
     })
 })
-.get('/:id', (req, res) => {
-    usuariosDao.listar({
-        id: req.param.id,
-        next: ({usuario}) => {
-            res.json(usuario)
-        },
-        nextErroBase: ({erroBanco}) => {console.log(erroBanco)}
-    })
+.get('/:id', (req, res, next) => {
+    //verifica se está sendo requisitada uma url ou apenas passando um valor pro banco buscar
+    if (!isNaN(req.params.id)) {
+        usuariosDao.listar({
+            id: req.param.id,
+            next: ({usuario}) => {
+                res.json({responseStatus:1, usuario})
+            },
+            nextErroBase: ({erroBanco}) => {console.log(erroBanco)}
+        })
+    } else {
+        next()
+    }
 })
-.put('/:id', (req, res) => {
-    usuariosDao.atualizar({
-        id: req.param.id,
-        usuario: req.body,
-        next: () => {
-            res.json({})
-        },
-        nextErroBase: ({erroBanco}) => {console.log(erroBanco)}
-    })
+.put('/:id', (req, res, next) => {
+    //verifica se está sendo requisitada uma url ou apenas passando um valor pro banco buscar
+    if (!isNaN(req.params.id)) {
+        usuariosDao.atualizar({
+            id: req.param.id,
+            usuario: req.body,
+            next: () => {
+                res.json({responseStatus:1})
+            },
+            nextErroBase: ({erroBanco}) => {console.log(erroBanco)}
+        })
+    } else {
+        next()
+    }
 })
 .put('/alterar_senha/:id', (req, res) => {
     const salt = bcrypt.genSaltSync()
@@ -54,7 +64,7 @@ const UsuariosService = express.Router()
         id: req.param.id,
         senha,
         next: () => {
-            res.json({})
+            res.json({responseStatus:1})
         },
         nextErroBase: ({erroBanco}) => {console.log(erroBanco)}
     })
@@ -63,7 +73,7 @@ const UsuariosService = express.Router()
     usuariosDao.excluir({
         id: req.param.id,
         next: () => {
-            res.json({})
+            res.json({responseStatus:1})
         },
         nextErroBase: ({erroBanco}) => {console.log(erroBanco)}
     })
@@ -77,8 +87,8 @@ const UsuariosService = express.Router()
 
     usuariosDao.cadastrar({
         usuario,
-        next: () => {
-            res.json({})
+        next: ({usuario}) => {
+            res.json({responseStatus:1, usuario})
         },
         nextErroBase: ({erroBanco}) => { }
     })
