@@ -71,7 +71,7 @@ import MainPage from './telas/MainPage'
 
 import Home from './telas/Home'
 import Grupos from './telas/Grupos'
-import Tela2 from './telas/Tela2'
+import Usuarios from './telas/Usuarios'
 
 import Telas from './telas/Telas'
 import ControleAcessos from './telas/ControleAcessos'
@@ -84,7 +84,7 @@ const Main = () => (
         <MainPage>
             <Route exact path='/main/home' component={Home} />
             <Route path='/main/grupos' component={Grupos} />
-            <Route path='/main/tela2' component={Tela2} />
+            <Route path='/main/usuarios' component={Usuarios} />
             <Route path='/main/controle_acessos' component={ControleAcessos} />
             <Route path='/main/controle_usuarios' component={ControleUsuarios} />
             <Route path='/main/telas' component={Telas} />
