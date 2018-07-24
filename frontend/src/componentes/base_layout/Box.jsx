@@ -6,7 +6,7 @@ const Box = ({ titulo, novoButton, novoButtonText, novoButtonClick, children }) 
         <div className="box-header">
             <h3 className="box-title">{titulo}</h3>
             {
-                (novoButton === undefined || novoButton === true) ?
+                novoButton === true ?
                 <button className="btn btn-info btn-flat pull-right"
                 onClick={novoButtonClick}>
                     {novoButtonText}
@@ -19,6 +19,11 @@ const Box = ({ titulo, novoButton, novoButtonText, novoButtonClick, children }) 
         </div>
     </div>
 )
+
+Box.defaultProps = {
+    novoButton: true,
+    novoButtonClick: () => {}
+}
 
 Box.propTypes = {
     novoButtonClick: PropTypes.func,

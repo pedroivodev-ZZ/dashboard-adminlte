@@ -8,6 +8,7 @@ import Box from '../componentes/base_layout/Box'
 import Table from '../componentes/base_layout/Table'
 import EditButton from '../componentes/buttons/EditButton'
 import RemoveButton from '../componentes/buttons/RemoveButton'
+import FormGroupInput from '../componentes/form/FormGroupInput'
 import TelaApi from '../api/TelaApi'
 
 import { ATUALIZAR_MENU } from '../PubSubMessages.ts'
@@ -29,8 +30,6 @@ class Telas extends ComponentCustom {
  
     componentDidMount() {
         window.dispatchEvent(new Event('resize'))
-
-        this.editar = this.editar.bind(this)
 
         TelaApi.listar().then(({data}) => {
             this.setState({ telas: data.telas })
@@ -92,7 +91,7 @@ class Telas extends ComponentCustom {
                 path: this.state.path,
                 idTelaMae: this.state.idTelaMae
             })
-            .then((dado) => {
+            .then(({data}) => {
                 $('#modal_tela').modal('toggle')
                 this.idTela = 0
 
@@ -110,7 +109,7 @@ class Telas extends ComponentCustom {
                 nome: this.state.nome,
                 path: this.state.path
             })
-            .then((dado) => {
+            .then(({data}) => {
                 $('#modal_tela').modal('toggle')
                 this.idTela = 0
 
@@ -158,7 +157,7 @@ class Telas extends ComponentCustom {
                                 <label htmlFor="slTelas" className="col-sm-2 control-label">Nome</label>
 
                                 <div className="col-sm-10">
-                                    <select ref="txtNome" className="form-control"
+                                    <select id="slTelas" className="form-control"
                                     value={!this.state.idTelaMae ? '0' : this.state.idTelaMae} onChange={this.set.bind(this, 'idTelaMae')}>
                                         <option value="0">--- SELECIONE ---</option>
                                         {
@@ -169,22 +168,12 @@ class Telas extends ComponentCustom {
                                     </select>
                                 </div>
                             </div>
-                            <div className="form-group">
-                                <label htmlFor="txtNome" className="col-sm-2 control-label">Nome</label>
-
-                                <div className="col-sm-10">
-                                    <input type="text" className="form-control" ref="txtNome" placeholder="Nome"
-                                    value={this.state.nome} onChange={this.set.bind(this, 'nome')} />
-                                </div>
-                            </div>
-                            <div className="form-group">
-                                <label htmlFor="txtPath" className="col-sm-2 control-label">Caminho</label>
-
-                                <div className="col-sm-10">
-                                    <input type="text" className="form-control" ref="txtPath" placeholder="Caminho"
-                                    value={this.state.path} onChange={this.set.bind(this, 'path')} />
-                                </div>
-                            </div>
+                            <FormGroupInput labelCssClass="col-sm-2" labelText="Nome"
+                                inputId="txtNome" inputCssClass="col-sm-10" type="text" placeholder="Nome"
+                                value={this.state.nome} onChange={this.set.bind(this, 'nome')} />
+                            <FormGroupInput labelCssClass="col-sm-2" labelText="Caminho"
+                                inputId="txtPath" inputCssClass="col-sm-10" type="text" placeholder="Caminho"
+                                value={this.state.path} onChange={this.set.bind(this, 'path')} />
                         </div>
                     </Modal>
                 </section>

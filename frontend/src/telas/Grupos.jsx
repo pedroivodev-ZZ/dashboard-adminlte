@@ -8,6 +8,8 @@ import Box from '../componentes/base_layout/Box'
 import Table from '../componentes/base_layout/Table'
 import EditButton from '../componentes/buttons/EditButton'
 import RemoveButton from '../componentes/buttons/RemoveButton'
+import FormGroupInput from '../componentes/form/FormGroupInput'
+
 import GruposApi from '../api/GruposApi'
 
 import $ from 'jquery'
@@ -46,7 +48,7 @@ class Grupos extends ComponentCustom {
                 id: this.idGrupo,
                 nome: this.state.nome
             })
-            .then((dado) => {
+            .then(({data}) => {
                 $('#modal_grupos').modal('toggle')
                 this.idGrupo = 0
 
@@ -61,7 +63,7 @@ class Grupos extends ComponentCustom {
             GruposApi.cadastrar({
                 nome: this.state.nome
             })
-            .then((dado) => {
+            .then(({data}) => {
                 $('#modal_grupos').modal('toggle')
                 this.idGrupo = 0
 
@@ -121,14 +123,9 @@ class Grupos extends ComponentCustom {
                     <Modal titulo={this.state.alteracao ? "Edição" : "Cadastro"} modalId="modal_grupos"
                     salvarOnClick={this.salvarAlteracoes.bind(this)}>
                         <div className="form-horizontal">
-                            <div className="form-group">
-                                <label htmlFor="txtNome" className="col-sm-2 control-label">Nome</label>
-
-                                <div className="col-sm-10">
-                                    <input type="text" className="form-control" ref="txtNome" placeholder="Nome"
-                                    value={this.state.nome} onChange={this.set.bind(this, 'nome')} />
-                                </div>
-                            </div>
+                            <FormGroupInput labelCssClass="col-sm-2" labelText="Nome"
+                                inputId="txtNome" inputCssClass="col-sm-10" type="text" placeholder="Nome"
+                                value={this.state.nome} onChange={this.set.bind(this, 'nome')} />
                         </div>
                     </Modal>
                 </section>

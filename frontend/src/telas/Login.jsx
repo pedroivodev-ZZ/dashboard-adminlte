@@ -1,6 +1,5 @@
-import React, { Component } from 'react'
-import { Link } from 'react-router-dom'
-
+import React from 'react'
+import ComponentCustom from '../componentes/ComponentCustom'
 import 'admin-lte/plugins/iCheck/square/blue.css'
 
 import $ from 'jquery'
@@ -9,7 +8,7 @@ import 'admin-lte/plugins/iCheck/icheck.min'
 
 import UsuarioApi from '../api/UsuarioApi'
 
-class Login extends Component {
+class Login extends ComponentCustom {
     constructor() {
         super()
 
@@ -20,7 +19,7 @@ class Login extends Component {
     }
 
     componentDidMount() {
-        $('body').prop('class', 'hold-transition login-page')
+        window.document.querySelector('body').setAttribute('class', 'hold-transition login-page')
         $('input').iCheck({
             checkboxClass: 'icheckbox_square-blue',
             radioClass: 'iradio_square-blue',
@@ -28,22 +27,16 @@ class Login extends Component {
         })
     }
 
-    set(nomeCampo, event) {
-        let state = {}
-        state[nomeCampo] = event.target.value
-        this.setState(state)
-    }
-
     login(event) {
         event.preventDefault()
         const { history } = this.props
 
         UsuarioApi.login(
-            //this.state.email,
-            //this.state.senha
-            'pedroivofe@gmail.com', 'abc'
-        ).then((retorno) => {
-            sessionStorage.setItem('dados-usuario', JSON.stringify(retorno.data))
+            this.state.email,
+            this.state.senha
+            //'pedroivofe@gmail.com', 'abc'
+        ).then(({data}) => {
+            sessionStorage.setItem('dados-usuario', JSON.stringify(data.usuario))
             history.push('/main/home')
         })
     }
@@ -95,8 +88,7 @@ class Login extends Component {
                         Google+</a>
                     </div>
                     {/* /.social-auth-links */}
-                    <Link to="/main/telas">Teste</Link><br /><br />
-                    <a >I forgot my password</a><br />
+                    <a>I forgot my password</a><br />
                     <a href="register.html" className="text-center">Register a new membership</a>
 
                 </div>
