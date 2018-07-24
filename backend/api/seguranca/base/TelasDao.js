@@ -1,27 +1,5 @@
 const database = require('../../../config/database')
-
-function searchInTelas(telas, telaFilha) {
-    for (const i in telas) {
-        if (!telas[i].telas) {
-            telas[i].telas = []
-        }
-
-        if (telaFilha.fk_id_tela == telas[i].id) {
-            telas[i].telas.push(telaFilha)
-            break;
-        }
-
-        if (telas[i].telas.length > 0) {
-            searchInTelas(telas[i].telas, telaFilha)
-        }
-    }
-}
-
-function getListaAtualizada(lista, itensExcluir) {
-    return lista.filter((item, index) => {
-        return itensExcluir.indexOf(item.id) == -1
-    })
-}
+const { getTelasAsTree } = require('../../../api/seguranca/entidades/Telas')
 
 function listar({next, nextErroBanco}) {
     next = !next ? () => {} : next
@@ -65,32 +43,13 @@ function listarComoArvore({next, nextErroBanco}) {
 
     const connection = database.getConnection()
 
-    connection.query('select * from telas', function (err, results) {
+    connection.query('select * from telas', function (err, telas) {
         if (err) {
             nextErroBanco({erroBanco: err.sqlMessage})
             return
         }
 
-        let idTelasAchadas = []
-
-        let telas = results.filter((tela, indice) => {
-            if (!tela.fk_id_tela) {
-                idTelasAchadas.push(tela.id)
-                return true
-            }
-
-            return false
-        })
-
-        let telasRestantes = getListaAtualizada(results, idTelasAchadas)
-        while (telasRestantes.length != 0) {
-            searchInTelas(telas, telasRestantes[0])
-
-            idTelasAchadas.push(telasRestantes[0].id)
-            telasRestantes = getListaAtualizada(telasRestantes, idTelasAchadas)
-        }
-
-        next({telas})
+        next({telas: getTelasAsTree(telas)})
     })
 
     connection.end()

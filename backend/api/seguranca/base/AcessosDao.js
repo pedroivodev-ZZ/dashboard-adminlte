@@ -1,5 +1,6 @@
 const _ = require('lodash')
 const database = require('../../../config/database')
+const { getTelasAsTree } = require('../../../api/seguranca/entidades/Telas')
 
 function cadastrar({acesso, next, nextErroBase }) {
     next = !next ? () => {} : next
@@ -46,7 +47,7 @@ function atualizar({acesso, next, nextErroBase }) {
             return
         }
 
-        next({ status: 1 })
+        next({ acesso })
     })
 }
 
@@ -152,52 +153,10 @@ function listarTelasPorGrupo({ fkIdGrupo, next, nextErroBase }) {
                     })
                 }
 
-                let idTelasAchadas = []
-
-                let telasPermitidasOrdenadas = telasPermitidas.filter((tela, indice) => {
-                    if (!tela.fk_id_tela) {
-                        idTelasAchadas.push(tela.id)
-                        return true
-                    }
-
-                    return false
-                })
-
-                let telasRestantes = getListaAtualizada(telasPermitidas, idTelasAchadas)
-                while (telasRestantes.length != 0) {
-                    searchInTelas(telasPermitidasOrdenadas, telasRestantes[0])
-
-                    idTelasAchadas.push(telasRestantes[0].id)
-                    telasRestantes = getListaAtualizada(telasRestantes, idTelasAchadas)
-                }
-
-                next({telas: telasPermitidasOrdenadas})
+                next({telas: getTelasAsTree(telasPermitidas)})
             }
         }
     )
-}
-
-function searchInTelas(telas, telaFilha) {
-    for (const i in telas) {
-        if (!telas[i].telas) {
-            telas[i].telas = []
-        }
-
-        if (telaFilha.fk_id_tela == telas[i].id) {
-            telas[i].telas.push(telaFilha)
-            break;
-        }
-
-        if (telas[i].telas.length > 0) {
-            searchInTelas(telas[i].telas, telaFilha)
-        }
-    }
-}
-
-function getListaAtualizada(lista, itensExcluir) {
-    return lista.filter((item, index) => {
-        return itensExcluir.indexOf(item.id) == -1
-    })
 }
 
 module.exports = {

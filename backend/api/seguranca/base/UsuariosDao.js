@@ -180,31 +180,19 @@ function listar({ next, nextErroBase }) {
             }
 
             if (usuarios) {
-                next({usuarios})
+                let usuariosJson = usuarios.map((usuario) => {
+                    return {
+                        id: usuario.id,
+                        nome: usuario.nome_usuario,
+                        email: usuario.email,
+                        grupo: {
+                            id: usuario.id_grupo,
+                            nome: usuario.nome_grupo,
+                        }
+                    }
+                })
+                next({usuarios: usuariosJson})
             }
-    })
-}
-
-function searchInTelas(telas, telaFilha) {
-    for (const i in telas) {
-        if (!telas[i].telas) {
-            telas[i].telas = []
-        }
-
-        if (telaFilha.fk_id_tela == telas[i].id) {
-            telas[i].telas.push(telaFilha)
-            break;
-        }
-
-        if (telas[i].telas.length > 0) {
-            searchInTelas(telas[i].telas, telaFilha)
-        }
-    }
-}
-
-function getListaAtualizada(lista, itensExcluir) {
-    return lista.filter((item, index) => {
-        return itensExcluir.indexOf(item.id) == -1
     })
 }
 
