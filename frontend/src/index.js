@@ -65,6 +65,7 @@ import './fixes/adminlte-fix'
 import React from 'react'
 import ReactDOM from 'react-dom'
 import { Switch, Route, BrowserRouter } from 'react-router-dom'
+import { createBrowserHistory } from 'history'
 
 import Login from './telas/Login'
 import MainPage from './telas/MainPage'
@@ -78,11 +79,11 @@ import ControleAcessos from './telas/ControleAcessos'
 import ControleUsuarios from './telas/ControleUsuarios'
 
 import registerServiceWorker from './registerServiceWorker'
-
-const Main = () => (
+// history={createBrowserHistory()}>
+const Main = ({history}) => (
     <BrowserRouter>
-        <MainPage>
-            <Route exact path='/main/home' component={Home} />
+        <MainPage history={history}>
+            <Route path='/main/home' component={Home} />
             <Route path='/main/grupos' component={Grupos} />
             <Route path='/main/usuarios' component={Usuarios} />
             <Route path='/main/controle_acessos' component={ControleAcessos} />

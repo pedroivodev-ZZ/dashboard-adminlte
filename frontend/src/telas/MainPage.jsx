@@ -17,7 +17,7 @@ class MainPage extends Component {
         return (
             <div className="wrapper">
                 <MainSidebar />
-                <Header />
+                <Header history={this.props.history} />
                 {this.props.children}
                 <Footer />
                 {/* <ControlSidebar /> */}
