@@ -24,7 +24,7 @@ class Usuarios extends ComponentCustom {
         this.state = {
             alteracao: false,
             usuarios: [], idGrupo: '', grupos: [],
-            nome: '', email: '', senha: ''
+            nome: '', sobrenome: '', email: '', senha: ''
         }
     }
 
@@ -46,16 +46,16 @@ class Usuarios extends ComponentCustom {
 
     abrirCadastroNovaTela() {
         this.idUsuario = 0
-        this.setState({ alteracao: false, nome: '', email: '', senha: '', idGrupo: '' })
+        this.setState({ alteracao: false, nome: '', sobrenome: '', email: '', senha: '', idGrupo: '' })
         $('#modal_usuarios').modal('toggle')
     }
 
     editar({ usuario }) {
-        const { id, nome, email, grupo } = usuario
+        const { id, nome, sobrenome, email, grupo } = usuario
 
         this.idUsuario = id
 
-        this.setState({ alteracao: true, nome, email, idGrupo: grupo.id })
+        this.setState({ alteracao: true, nome, sobrenome, email, idGrupo: grupo.id })
 
         $('#modal_usuarios').modal('toggle')
     }
@@ -79,6 +79,7 @@ class Usuarios extends ComponentCustom {
             UsuarioApi.atualizar({
                 id: this.idUsuario,
                 nome: this.state.nome,
+                sobrenome: this.state.sobrenome,
                 email: this.state.email,
                 fkIdGrupo: this.state.idGrupo
             })
@@ -100,6 +101,7 @@ class Usuarios extends ComponentCustom {
         } else {
             UsuarioApi.cadastrar({
                 nome: this.state.nome,
+                sobrenome: this.state.sobrenome,
                 email: this.state.email,
                 senha: this.state.senha,
                 fkIdGrupo: this.state.idGrupo
@@ -170,6 +172,10 @@ class Usuarios extends ComponentCustom {
                             <FormGroupInput labelCssClass="col-sm-2" labelText="Nome"
                                 inputId="txtNome" inputCssClass="col-sm-10" type="text" placeholder="Nome"
                                 value={this.state.nome} onChange={this.set.bind(this, 'nome')} />
+
+                            <FormGroupInput labelCssClass="col-sm-2" labelText="Sobrenome"
+                                inputId="txtSobrenome" inputCssClass="col-sm-10" type="text" placeholder="Sobrenome"
+                                value={this.state.sobrenome} onChange={this.set.bind(this, 'sobrenome')} />
 
                             <FormGroupInput labelCssClass="col-sm-2" labelText="E-mail"
                                 inputId="txtEmail" inputCssClass="col-sm-10" type="email" placeholder="E-mail"
