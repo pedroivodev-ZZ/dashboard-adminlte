@@ -32,6 +32,7 @@ function login({email, senha, next, nextErroBase }) {
                 informacoesUsuario = {
                     email: results[0].email,
                     nome: results[0].nome_usuario,
+                    sobrenome: results[0].sobrenome_usuario,
                     grupo: {
                         id: results[0].id_grupo,
                         nome: results[0].nome_grupo,
@@ -67,7 +68,12 @@ function cadastrar({usuario, next, nextErroBase }) {
             return
         }
 
-        next(results)
+        next({
+            usuario:{
+                id: results.insertId,
+                nome, sobrenome, email, fkIdGrupo
+            }
+        })
     })
 }
 
@@ -184,6 +190,7 @@ function listar({ next, nextErroBase }) {
                     return {
                         id: usuario.id,
                         nome: usuario.nome_usuario,
+                        sobrenome: usuario.sobrenome_usuario,
                         email: usuario.email,
                         grupo: {
                             id: usuario.id_grupo,
