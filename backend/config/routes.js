@@ -1,9 +1,9 @@
 const apiUrl = '/api'
 
-const acessosService = require('../api/seguranca/servicos/AcessosService')
-const telasService = require('../api/seguranca/servicos/TelasService')
-const usuariosService = require('../api/seguranca/servicos/UsuariosService')
-const gruposService = require('../api/seguranca/servicos/GruposService')
+const acessosService = require('../api/seguranca/rotas/AcessosService')
+const telasService = require('../api/seguranca/rotas/TelasService')
+const usuariosService = require('../api/seguranca/rotas/UsuariosService')
+const gruposService = require('../api/seguranca/rotas/GruposService')
 
 module.exports = (server) => {
   server
